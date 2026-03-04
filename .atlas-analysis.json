@@ -1,0 +1,132 @@
+{
+  "projectType": "ai-ml",
+  "projectName": "Mindect",
+  "projectDescription": "A comprehensive learning platform for AI, ML, deep learning, and mathematical foundations including algebra, calculus, and probability.",
+  "theme": "almond",
+  "primaryColor": "#22bdd5",
+  "lightColor": "#553483",
+  "darkColor": null,
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Machine Learning",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Supervised Learning",
+            "pages": [
+              "supervised-learning/introduction",
+              "supervised-learning/regression-model",
+              "supervised-learning/gradient-descent",
+              "supervised-learning/multiple-linear-regression",
+              "supervised-learning/logistic-regression",
+              "supervised-learning/cost-function",
+              "supervised-learning/overfitting"
+            ]
+          },
+          {
+            "group": "Unsupervised Learning",
+            "pages": [
+              "unsupervised-learning/introduction",
+              "unsupervised-learning/clustering"
+            ]
+          },
+          {
+            "group": "Learning Algorithms",
+            "pages": [
+              "learning-algorithms/introduction",
+              "learning-algorithms/neural-networks",
+              "learning-algorithms/neural-network-intuition",
+              "learning-algorithms/neural-network-model",
+              "learning-algorithms/tensorflow-implementation",
+              "learning-algorithms/neural-network-training",
+              "learning-algorithms/vectorization",
+              "learning-algorithms/agi"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Mathematics",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "mathematics/introduction"
+            ]
+          },
+          {
+            "group": "Linear Algebra",
+            "pages": [
+              "mathematics/algebra/introduction",
+              "mathematics/algebra/numpy-arrays",
+              "mathematics/algebra/linear-systems",
+              "mathematics/algebra/vector-operations",
+              "mathematics/algebra/matrix-multiplication",
+              "mathematics/algebra/linear-transformations",
+              "mathematics/algebra/eigenvalues"
+            ]
+          },
+          {
+            "group": "Calculus",
+            "pages": [
+              "mathematics/calculus/introduction",
+              "mathematics/calculus/differentiation",
+              "mathematics/calculus/gradient-descent-one-variable",
+              "mathematics/calculus/gradient-descent-two-variables",
+              "mathematics/calculus/perceptron",
+              "mathematics/calculus/newtons-method"
+            ]
+          },
+          {
+            "group": "Probability & Statistics",
+            "pages": [
+              "mathematics/probability/introduction",
+              "mathematics/probability/birthday-problem",
+              "mathematics/probability/exploratory-data-analysis",
+              "mathematics/probability/naive-bayes",
+              "mathematics/probability/distributions"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Setup",
+            "pages": [
+              "guides/jupyter-notebook",
+              "guides/python-setup",
+              "guides/contributing"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Comprehensive machine learning tutorials covering supervised and unsupervised learning",
+    "Neural network implementation guides with Python and TensorFlow",
+    "Mathematical foundations: Linear Algebra, Calculus, Probability & Statistics",
+    "Interactive Jupyter notebooks with code examples",
+    "Beginner-friendly content with step-by-step explanations",
+    "Cost functions, gradient descent, and optimization techniques",
+    "Deep learning algorithms and neural network architectures"
+  ],
+  "publicApiSurface": [
+    "Supervised Learning: Regression models, Logistic regression, Gradient descent",
+    "Unsupervised Learning: Clustering algorithms",
+    "Neural Networks: Forward propagation, Backward propagation, Activation functions",
+    "TensorFlow Implementation: Building and training neural networks",
+    "Linear Algebra: NumPy arrays, Matrix operations, Linear transformations",
+    "Calculus: Differentiation, Optimization, Gradient descent algorithms",
+    "Probability: Statistical distributions, Naive Bayes, Exploratory data analysis"
+  ]
+}
