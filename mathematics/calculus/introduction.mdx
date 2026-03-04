@@ -1,0 +1,339 @@
+---
+title: Introduction to Differentiation in Python
+description: Explore symbolic, numerical, and automatic differentiation methods in Python and compare their computational efficiency.
+---
+
+## Introduction
+
+Differentiation is a fundamental operation in calculus with critical applications in machine learning and optimization. This guide explores three methods of computing derivatives in Python: symbolic, numerical, and automatic differentiation.
+
+## Functions in Python
+
+Let's start with a simple function $f(x) = x^2$:
+
+```python
+def f(x):
+    return x**2
+
+print(f(3))
+```
+
+The derivative $f'(x) = 2x$ can be defined as:
+
+```python
+def dfdx(x):
+    return 2*x
+
+print(dfdx(3))
+```
+
+### Applying to Arrays
+
+These functions work with NumPy arrays:
+
+```python
+import numpy as np
+
+x_array = np.array([1, 2, 3])
+
+print("x:\n", x_array)
+print("f(x) = x**2:\n", f(x_array))
+print("f'(x) = 2x:\n", dfdx(x_array))
+```
+
+### Visualization
+
+```python
+import matplotlib.pyplot as plt
+
+%matplotlib inline
+
+def plot_f1_and_f2(f1, f2=None, x_min=-5, x_max=5, label1="f(x)", label2="f'(x)"):
+    x = np.linspace(x_min, x_max, 100)
+    
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.spines['left'].set_position('center')
+    ax.spines['bottom'].set_position('zero')
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+
+    plt.plot(x, f1(x), 'r', label=label1)
+    if f2 is not None:
+        if isinstance(f2, np.ndarray):
+            plt.plot(x, f2, 'bo', markersize=3, label=label2)
+        else:
+            plt.plot(x, f2(x), 'b', label=label2)
+    plt.legend()
+    plt.show()
+    
+plot_f1_and_f2(f, dfdx)
+```
+
+## Symbolic Differentiation
+
+**Symbolic computation** deals with exact mathematical representations. Symbolic differentiation produces exact derivatives, similar to computing by hand.
+
+### Introduction to SymPy
+
+```python
+from sympy import *
+
+# Exact representation
+sqrt(18)  # Returns 3√2, not 4.242...
+
+# Numerical evaluation with 8 digits
+N(sqrt(18), 8)
+```
+
+### Defining Symbolic Expressions
+
+```python
+# Define symbols
+x, y = symbols('x y')
+
+# Create expression
+expr = 2 * x**2 - x * y
+expr
+```
+
+### Manipulating Expressions
+
+```python
+# Combine expressions
+expr_manip = x * (expr + x * y + x**3)
+
+# Expand
+expand(expr_manip)
+
+# Factor
+factor(expr_manip)
+
+# Substitute values
+expr.evalf(subs={x: -1, y: 2})
+```
+
+### Symbolic Differentiation
+
+```python
+# Differentiate power function
+diff(x**3, x)
+
+# Differentiate composed functions
+dfdx_composed = diff(exp(-2*x) + 3*sin(3*x), x)
+dfdx_composed
+```
+
+### Making SymPy NumPy-Compatible
+
+```python
+from sympy.utilities.lambdify import lambdify
+
+f_symb = x ** 2
+dfdx_symb = diff(f_symb, x)
+
+# Convert to NumPy-friendly function
+f_symb_numpy = lambdify(x, f_symb, 'numpy')
+dfdx_symb_numpy = lambdify(x, dfdx_symb, 'numpy')
+
+x_array = np.array([1, 2, 3])
+print("f'(x) = 2x:\n", dfdx_symb_numpy(x_array))
+
+plot_f1_and_f2(f_symb_numpy, dfdx_symb_numpy)
+```
+
+### Limitations of Symbolic Differentiation
+
+<Warning>
+Symbolic differentiation can produce expressions that are too complicated to evaluate or suffer from "expression swell" - unmanageably complex outputs.
+</Warning>
+
+Example with absolute value:
+
+```python
+dfdx_abs = diff(abs(x), x)
+print(dfdx_abs)
+
+# Fails to evaluate at x = -2
+dfdx_abs.evalf(subs={x: -2})
+```
+
+## Numerical Differentiation
+
+Numerical differentiation approximates derivatives using finite differences.
+
+### Using np.gradient
+
+```python
+x_array_2 = np.linspace(-5, 5, 100)
+dfdx_numerical = np.gradient(f(x_array_2), x_array_2)
+
+plot_f1_and_f2(dfdx_symb_numpy, dfdx_numerical, 
+              label1="f'(x) exact", label2="f'(x) approximate")
+```
+
+### Complex Functions
+
+```python
+def f_composed(x):
+    return np.exp(-2*x) + 3*np.sin(3*x)
+
+plot_f1_and_f2(lambdify(x, dfdx_composed, 'numpy'), 
+              np.gradient(f_composed(x_array_2), x_array_2),
+              label1="f'(x) exact", label2="f'(x) approximate")
+```
+
+### Limitations
+
+<Warning>
+- Not exact (though usually accurate enough for ML)
+- Inaccurate at points with derivative "jumps"
+- Requires function evaluation each time (slow for repeated differentiation)
+</Warning>
+
+## Automatic Differentiation
+
+**Automatic differentiation** (autodiff) breaks down functions into basic operations and constructs a computational graph, then uses the chain rule to compute derivatives efficiently.
+
+<Note>
+Automatic differentiation is the most commonly used approach in machine learning and neural networks.
+</Note>
+
+### Introduction to JAX
+
+JAX brings together Autograd functionality and XLA compiler for parallel computing.
+
+```python
+from jax import grad, vmap
+import jax.numpy as jnp
+```
+
+### JAX Arrays
+
+```python
+x_array_jnp = jnp.array([1., 2., 3.])
+
+print("Type of NumPy array:", type(x_array))
+print("Type of JAX NumPy array:", type(x_array_jnp))
+```
+
+### Converting Arrays
+
+```python
+x_array_jnp = jnp.array(x_array.astype('float32'))
+print("JAX NumPy array:", x_array_jnp)
+```
+
+### Basic Operations
+
+```python
+print(x_array_jnp * 2)
+print(x_array_jnp[2])
+```
+
+### Immutable Arrays
+
+JAX arrays are immutable:
+
+```python
+# This will error
+try:
+    x_array_jnp[2] = 4.0
+except TypeError as err:
+    print(err)
+
+# Use .at[i].set(value) instead
+y_array_jnp = x_array_jnp.at[2].set(4.0)
+print(y_array_jnp)
+```
+
+### Automatic Differentiation with JAX
+
+```python
+print("Function value at x = 3:", f(3.0))
+print("Derivative value at x = 3:", grad(f)(3.0))
+```
+
+<Warning>
+JAX requires float values, not integers:
+</Warning>
+
+```python
+try:
+    grad(f)(3)  # Will error
+except TypeError as err:
+    print(err)
+```
+
+### Vectorization with vmap
+
+```python
+dfdx_jax_vmap = vmap(grad(f))(x_array_jnp)
+print(dfdx_jax_vmap)
+
+plot_f1_and_f2(f, vmap(grad(f)))
+```
+
+### Common Derivatives
+
+```python
+def g(x):
+    return jnp.abs(x)
+    # Try: x**3, 2*x**3 - 3*x**2 + 5, 1/x, jnp.exp(x),
+    # jnp.log(x), jnp.sin(x), jnp.cos(x),
+    # jnp.abs(x)+jnp.sin(x)*jnp.cos(x)
+
+plot_f1_and_f2(g, vmap(grad(g)))
+```
+
+## Computational Efficiency Comparison
+
+```python
+import time
+
+x_array_large = np.linspace(-5, 5, 1000000)
+
+# Symbolic
+tic_symb = time.time()
+res_symb = lambdify(x, diff(f(x), x), 'numpy')(x_array_large)
+toc_symb = time.time()
+time_symb = 1000 * (toc_symb - tic_symb)
+
+# Numerical
+tic_numerical = time.time()
+res_numerical = np.gradient(f(x_array_large), x_array_large)
+toc_numerical = time.time()
+time_numerical = 1000 * (toc_numerical - tic_numerical)
+
+# Automatic
+tic_jax = time.time()
+res_jax = vmap(grad(f))(jnp.array(x_array_large.astype('float32')))
+toc_jax = time.time()
+time_jax = 1000 * (toc_jax - tic_jax)
+
+print(f"\nTime\nSymbolic: {time_symb} ms")
+print(f"Numerical: {time_numerical} ms")
+print(f"Automatic: {time_jax} ms")
+```
+
+<CardGroup cols={3}>
+  <Card title="Symbolic" icon="function">
+    Exact but can be slow due to expression swell
+  </Card>
+  <Card title="Numerical" icon="calculator">
+    Approximate and slow for repeated differentiation
+  </Card>
+  <Card title="Automatic" icon="bolt">
+    Fast and accurate - best for machine learning
+  </Card>
+</CardGroup>
+
+## Summary
+
+- **Symbolic differentiation**: Exact but can suffer from expression swell
+- **Numerical differentiation**: Simple but slow and approximate
+- **Automatic differentiation**: Fast, accurate, ideal for machine learning
+- JAX is the recommended library for automatic differentiation in Python
+- Computational graphs make automatic differentiation efficient for neural networks

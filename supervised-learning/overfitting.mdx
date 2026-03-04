@@ -1,0 +1,230 @@
+---
+title: Overfitting and Underfitting
+description: Learn about overfitting and underfitting in machine learning, and discover techniques like regularization to build models that generalize well.
+---
+
+## Introduction
+
+You've learned about linear regression and logistic regression. They work well for many tasks, but sometimes algorithms can run into problems called **overfitting** and **underfitting**, which cause poor performance.
+
+In this section, we'll explore what these problems are and how to address them, particularly using a technique called **regularization**.
+
+## The Three Scenarios
+
+Let's revisit predicting housing prices with linear regression to understand these concepts.
+
+### Underfitting (High Bias)
+
+Suppose your dataset looks like this:
+
+
+If you fit a simple linear function:
+
+
+This model doesn't fit the training data very well. It's **underfitting** the data.
+
+<Note>
+  **Underfitting** (also called **high bias**) means the model is too simple to capture the patterns in the training data. The algorithm has a strong preconception that the relationship is linear, even when the data suggests otherwise.
+</Note>
+
+The term "bias" here refers to the algorithm's bias toward a particular form (like linear), preventing it from fitting the data well.
+
+### Just Right
+
+With quadratic features (x and x²), you can fit a curve:
+
+
+This model fits the data better and should **generalize** well to new examples:
+
+
+<Note>
+  **Generalization** means the model performs well on new examples it has never seen before - not just on the training set.
+</Note>
+
+### Overfitting (High Variance)
+
+Now suppose you fit a fourth-order polynomial:
+
+
+You get a wiggly curve that passes through every training point:
+
+
+This model fits the training data **too well**. It's **overfitting**.
+
+
+<Warning>
+  **Overfitting** (also called **high variance**) means the model fits the training data almost perfectly but fails to generalize to new examples. The model is too complex and captures noise rather than the underlying pattern.
+</Warning>
+
+The term "high variance" means that if you train on slightly different datasets, you might get vastly different models.
+
+### The Goldilocks Principle
+
+
+Like the story of Goldilocks and the Three Bears:
+- Too few features → underfitting (high bias)
+- Too many features → overfitting (high variance)
+- Just right → good generalization
+
+## Overfitting in Classification
+
+The same concepts apply to classification problems.
+
+Consider classifying tumors as malignant or benign using two features (tumor size and patient age):
+
+
+### Underfitting in Classification
+
+A simple logistic regression model creates a straight line decision boundary:
+
+
+This doesn't fit the data well - it's **underfitting** or has **high bias**.
+
+### Just Right
+
+Adding quadratic terms creates an elliptical decision boundary:
+
+
+This fits reasonably well and should generalize to new patients.
+
+### Overfitting in Classification
+
+With many high-order polynomial features, you get a very complex boundary:
+
+
+This is **overfitting** with **high variance**. The model fits training data perfectly but won't generalize well.
+
+## Addressing Overfitting
+
+Here are three main approaches to address overfitting:
+
+### Option 1: Collect More Training Data
+
+
+With more training examples, even a high-order polynomial will fit a smoother function:
+
+
+<Note>
+  Getting more data is the number one tool against overfitting. When available, it can work really well.
+</Note>
+
+However, more data isn't always available or practical to obtain.
+
+### Option 2: Feature Selection
+
+Reduce the number of features you're using.
+
+
+Instead of using all 100 features, select only the most useful ones:
+
+
+<Accordion title="Feature Selection Approaches">
+  - Use your intuition to pick the most relevant features
+  - Use algorithms that automatically select features (covered in Advanced Learning)
+  - Domain expertise to identify important variables
+</Accordion>
+
+<Warning>
+  One disadvantage of feature selection: you're throwing away information. If all features are useful for prediction, you don't want to discard some.
+</Warning>
+
+### Option 3: Regularization
+
+Regularization is a technique to reduce overfitting without eliminating features.
+
+
+<Note>
+  **Regularization** encourages the learning algorithm to shrink parameter values without necessarily setting them to exactly 0. This keeps all features but prevents them from having an overly large effect.
+</Note>
+
+Even with high-order polynomials, if you keep parameter values small, you get a curve that fits better:
+
+
+#### How Regularization Works
+
+- Setting a parameter to 0 is equivalent to eliminating a feature
+- Regularization gently reduces parameter impacts without eliminating features
+- You can keep all features while preventing overfitting
+- By convention, we regularize w₁, w₂, ..., wₙ but typically not b
+
+#### Regularization in Practice
+
+Modify your cost function to penalize large parameter values:
+
+```math
+J(w, b) = \frac{1}{2m} \sum_{i=1}^{m} (f_{w,b}(x^{(i)}) - y^{(i)})^2 + \frac{\lambda}{2m} \sum_{j=1}^{n} w_j^2
+```
+
+Where λ (lambda) is the **regularization parameter** that controls how much to penalize large weights.
+
+## Summary of Solutions
+
+
+<Steps>
+  <Step title="Collect more data">
+    If possible, get more training examples. This is the most effective solution.
+  </Step>
+  
+  <Step title="Feature selection">
+    Use only a subset of the most relevant features. Covered more in Advanced Algorithms.
+  </Step>
+  
+  <Step title="Regularization">
+    Reduce the size of parameters. Very useful and widely used in practice.
+  </Step>
+</Steps>
+
+## Key Takeaways
+
+**Underfitting (High Bias):**
+- Model is too simple
+- Poor performance on training data
+- Poor performance on new data
+- Solution: Use more features or more complex model
+
+**Overfitting (High Variance):**
+- Model is too complex
+- Excellent performance on training data
+- Poor performance on new data
+- Solution: More data, fewer features, or regularization
+
+**Good Fit:**
+- Balanced complexity
+- Good performance on training data
+- Good performance on new data
+- Goal: Achieve this balance
+
+## Regularization Benefits
+
+<Note>
+  Regularization is used extensively in practice, including for training neural networks. It's one of the most important techniques for building models that generalize well.
+</Note>
+
+Regularization:
+- Keeps all features
+- Prevents overfitting
+- Works with neural networks and other algorithms
+- Is easy to implement
+- Requires tuning the regularization parameter λ
+
+## Next Steps
+
+To build better models:
+
+1. **Understand your data**: Is your model underfitting or overfitting?
+2. **Choose appropriate complexity**: Balance model complexity with available data
+3. **Use regularization**: Especially when you have many features
+4. **Validate properly**: Use separate validation data to check generalization
+5. **Iterate**: Try different approaches and compare results
+
+Later in this course, you'll learn:
+- How to diagnose underfitting vs overfitting systematically
+- Advanced regularization techniques
+- Cross-validation for model selection
+- Regularization for neural networks
+
+<Warning>
+  Always test your model on data it hasn't seen during training. A model that memorizes the training data (overfitting) will perform poorly in the real world.
+</Warning>
+
+Understanding and addressing overfitting is crucial for building machine learning models that work well in production!

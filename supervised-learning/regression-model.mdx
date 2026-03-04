@@ -1,0 +1,152 @@
+---
+title: Linear Regression Model
+description: Learn about the linear regression model, the most widely used learning algorithm for fitting a straight line to your data.
+---
+
+## Introduction
+
+Linear regression is probably the most widely used learning algorithm in the world today. It means **fitting a straight line to your data**. As you get familiar with linear regression, many of the concepts you see here will also apply to other machine learning models.
+
+## What is Linear Regression?
+
+Let's start with a problem you can address using linear regression: predicting the price of a house based on its size.
+
+
+Here we have a graph where:
+- **Horizontal axis**: Size of the house in square feet
+- **Vertical axis**: Price of a house in thousands of dollars
+
+Each data point (little cross) represents a house with its size and the price it recently sold for.
+
+### Building a Model
+
+Imagine you're a real estate agent helping a client sell her house. She asks: "How much do you think I can get for this house?"
+
+<Steps>
+  <Step title="Measure the house">
+    The house is 1,250 square feet.
+  </Step>
+  
+  <Step title="Build a linear regression model">
+    Fit a straight line to the dataset.
+  </Step>
+  
+  <Step title="Make prediction">
+    Where the house size intersects the line, trace to the vertical axis to find the predicted price (~$220,000).
+  </Step>
+</Steps>
+
+
+This is an example of **supervised learning** because you first train a model by giving it data with the right answers (both house sizes and their prices).
+
+
+<Note>
+  A **regression model** predicts numbers as output, like prices in dollars. Any supervised learning model that predicts a number (such as 220,000 or 1.5 or -33.2) is addressing a regression problem.
+</Note>
+
+## Regression vs Classification
+
+In regression, there are infinitely many possible numbers that the model could output. This contrasts with **classification models**, which predict categories or discrete categories.
+
+
+Classification examples:
+- Predicting if a picture is of a cat or dog
+- Predicting if a patient has a particular disease
+
+In classification, there are only a small number of possible outputs, whereas in regression, the model can output infinitely many possible numbers.
+
+## Understanding the Data
+
+### Data Visualization
+
+You can view the data in two ways:
+
+1. **Plot** (on the left): Visual representation of size vs price
+2. **Data table** (on the right): Tabular format
+
+
+The data comprises:
+- **Inputs**: Size of the house (one column)
+- **Outputs**: Price (another column)
+
+
+If you have 47 rows in the data table, there are 47 crosses on the plot, each corresponding to one row.
+
+### Notation for Data
+
+Here's the standard notation used in machine learning:
+
+
+- **Training set**: The dataset used to train the model
+- **m**: Total number of training examples (m = 47 in this example)
+- **x**: Input variable (also called **feature** or **input feature**)
+- **y**: Output variable (also called **target variable**)
+- **(x, y)**: A single training example
+- **(x^(i), y^(i))**: The i-th training example
+
+<Warning>
+  The superscript (i) in parentheses is NOT exponentiation. It's just an index referring to the i-th row in the training set. For example, x^(2) refers to the second training example, not x squared.
+</Warning>
+
+For the first training example:
+```math
+x^{(1)} = 2104 \text{ (square feet)}
+```
+```math
+y^{(1)} = 400 \text{ (thousand dollars)}
+```
+
+
+## The Model
+
+The linear regression model is defined as:
+
+```math
+f_{w,b}(x) = wx + b
+```
+
+Where:
+- **w** and **b** are the **parameters** of the model (also called coefficients or weights)
+- **x** is the input feature
+- **f(x)** is the prediction (also written as ŷ)
+
+Different values of w and b give different lines:
+
+### Example 1: w = 0, b = 1.5
+
+```math
+f(x) = 0 \cdot x + 1.5 = 1.5
+```
+
+This creates a horizontal line at 1.5 (the y-intercept).
+
+
+### Example 2: w = 0.5, b = 0
+
+```math
+f(x) = 0.5 \cdot x
+```
+
+This creates a line with slope 0.5.
+
+
+### Example 3: w = 0.5, b = 1
+
+```math
+f(x) = 0.5 \cdot x + 1
+```
+
+The line has slope 0.5 and y-intercept 1.
+
+
+## Next Steps
+
+Now that you understand what a training set looks like and the standard notation:
+
+- Learn about the [Cost Function](/supervised-learning/cost-function) to measure how well your model fits the data
+- Explore [Gradient Descent](/supervised-learning/gradient-descent) to find the best parameters w and b
+- Study [Multiple Linear Regression](/supervised-learning/multiple-linear-regression) to use multiple features
+
+<Note>
+  The goal is to choose values for parameters w and b so that the straight line fits the training data well - meaning the line passes through or is close to the training examples.
+</Note>

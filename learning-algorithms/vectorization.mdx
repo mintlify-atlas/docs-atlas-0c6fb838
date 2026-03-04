@@ -1,0 +1,384 @@
+---
+title: Vectorization and Matrix Multiplication
+description: Learn how neural networks are implemented efficiently using vectorization and matrix multiplication
+---
+
+## Introduction
+
+One of the key reasons deep learning researchers have been able to scale up neural networks over the last decade is because neural networks can be **vectorized** - implemented very efficiently using matrix multiplications.
+
+<Note>
+Parallel computing hardware, including GPUs and some CPU functions, are very good at doing large matrix multiplications. Without these vectorized implementations, deep learning would not be nearly as successful as it is today.
+</Note>
+
+## From Loops to Vectorization
+
+Let's see how we can replace loops with efficient matrix operations.
+
+### Non-Vectorized Implementation
+
+Here's the code you've seen for implementing forward propagation in a single layer:
+
+```python
+def dense(a_in, W, b):
+    units = W.shape[1]
+    a_out = np.zeros(units)
+    
+    for j in range(units):
+        w = W[:,j]
+        z = np.dot(w, a_in) + b[j]
+        a_out[j] = g(z)  # sigmoid activation
+    
+    return a_out
+```
+
+
+This uses a **for loop** to compute each neuron's output one at a time.
+
+### Vectorized Implementation
+
+We can replace the entire for loop with matrix operations:
+
+```python
+def dense(a_in, W, b):
+    # Convert to 2D arrays (matrices)
+    a_in = np.array([[a_in]])  # Shape: (1, n_features)
+    W = np.array(W)            # Shape: (n_features, n_units)
+    b = np.array([b])          # Shape: (1, n_units)
+    
+    # Matrix multiplication + bias
+    Z = np.matmul(a_in, W) + b
+    
+    # Apply activation element-wise
+    a_out = g(Z)
+    
+    return a_out
+```
+
+
+<Note>
+In the vectorized implementation, all quantities (a_in, W, b, Z, a_out) are **2D arrays (matrices)**. This allows for efficient computation using optimized matrix multiplication.
+</Note>
+
+## Matrix Multiplication Fundamentals
+
+To understand vectorization, we need to understand matrix multiplication.
+
+### Vector Dot Product
+
+Let's start with the dot product between two vectors:
+
+```python
+a = np.array([1, 2])
+w = np.array([3, 4])
+
+z = np.dot(a, w)
+# z = (1 * 3) + (2 * 4) = 3 + 8 = 11
+```
+
+
+In general, for vectors \\( a \\) and \\( w \\):
+
+```math
+z = a \\cdot w = \\sum_{i} a_i w_i
+```
+
+
+### Vector-Matrix Multiplication
+
+We can write the dot product using **transpose**:
+
+```python
+a = np.array([1, 2])      # Shape: (2,)
+a_T = np.array([[1, 2]])  # Shape: (1, 2) - row vector
+w = np.array([[3], [4]])  # Shape: (2, 1) - column vector
+
+z = np.matmul(a_T, w)
+# z = 11 (same result as dot product)
+```
+
+
+<Note>
+**Transpose**: Converting a column vector to a row vector (or vice versa). We denote transpose with superscript T: \\( a^T \\)
+</Note>
+
+### Multiplying Vector by Matrix
+
+Now let's multiply a vector by a matrix:
+
+```python
+a_T = np.array([[1, 2]])           # Shape: (1, 2)
+W = np.array([[3, 5],
+              [4, 6]])              # Shape: (2, 2)
+
+Z = np.matmul(a_T, W)
+# First column: (1*3) + (2*4) = 11
+# Second column: (1*5) + (2*6) = 17
+# Result: [[11, 17]]
+```
+
+
+<Steps>
+  <Step title="Compute First Element">
+    Multiply a_T by the first column of W:
+    
+    ```
+    1*3 + 2*4 = 11
+    ```
+  </Step>
+  
+  <Step title="Compute Second Element">
+    Multiply a_T by the second column of W:
+    
+    ```
+    1*5 + 2*6 = 17
+    ```
+  </Step>
+  
+  <Step title="Result">
+    Z = [[11, 17]]
+  </Step>
+</Steps>
+
+### Matrix-Matrix Multiplication
+
+To multiply two matrices:
+
+```python
+A = np.array([[1, -1],
+              [2, -2]])     # Shape: (2, 2)
+              
+W = np.array([[3, 5],
+              [4, 6]])      # Shape: (2, 2)
+
+Z = np.matmul(A.T, W)
+```
+
+
+<Note>
+**Key insight**: Think of matrix multiplication as performing multiple vector-matrix multiplications, one row at a time.
+</Note>
+
+The computation:
+1. First row of A^T times W: `[11, 17]`
+2. Second row of A^T times W: `[-11, -17]`
+
+Result:
+```python
+Z = [[11, 17],
+     [-11, -17]]
+```
+
+## Matrix Multiplication Rules
+
+Let's formalize the rules for matrix multiplication.
+
+### Transpose Operation
+
+To transpose a matrix, **take each column and lay it on its side**:
+
+```python
+A = np.array([[1, -1, 0.1],
+              [2, -2, 0.2]])  # Shape: (2, 3)
+
+A_T = A.T
+# A_T = [[1, 2],
+#        [-1, -2],
+#        [0.1, 0.2]]  # Shape: (3, 2)
+```
+
+
+### Dimensions Must Match
+
+For matrix multiplication \\( A^T \\times W \\):
+
+<Note>
+**Critical rule**: The number of **columns** in the first matrix must equal the number of **rows** in the second matrix.
+</Note>
+
+```
+A^T: (3 × 2)  ×  W: (2 × 4)  →  Z: (3 × 4)
+         ↑          ↑
+      These must match!
+```
+
+
+You can only take dot products between vectors of the same length.
+
+### Output Dimensions
+
+The output matrix Z has dimensions:
+- **Rows**: Same as first matrix (A^T)
+- **Columns**: Same as second matrix (W)
+
+```
+A^T: (3 × 2)  ×  W: (2 × 4)  →  Z: (3 × 4)
+ ↑                      ↑           ↑      ↑
+rows                 columns      rows  columns
+of Z                  of Z
+```
+
+
+### General Formula
+
+To compute element (i, j) of matrix Z:
+
+```math
+Z_{ij} = \\text{(row i of first matrix)} \\cdot \\text{(column j of second matrix)}
+```
+
+
+## Implementing Neural Networks with Matrices
+
+Now let's apply matrix multiplication to implement a neural network layer efficiently.
+
+### Setting Up Matrices
+
+For a layer with input features [200, 17] and 3 neurons:
+
+```python
+# Input (transposed to row vector)
+A_T = np.array([[200, 17]])  # Shape: (1, 2)
+
+# Weights: each column is one neuron's weights
+W = np.array([[w1_1, w2_1, w3_1],
+              [w1_2, w2_2, w3_2]])  # Shape: (2, 3)
+
+# Biases
+B = np.array([[b1, b2, b3]])  # Shape: (1, 3)
+```
+
+
+### Computing Layer Output
+
+```python
+def dense(a_in, W, b):
+    # Matrix multiplication
+    Z = np.matmul(a_in, W) + b
+    
+    # Apply activation element-wise
+    a_out = sigmoid(Z)
+    
+    return a_out
+```
+
+
+This single matrix multiplication replaces the entire for loop!
+
+### Why This Works
+
+The matrix multiplication `np.matmul(a_in, W)`:
+
+1. **First column**: Computes \\( w_1 \\cdot x + b_1 \\) for neuron 1
+2. **Second column**: Computes \\( w_2 \\cdot x + b_2 \\) for neuron 2  
+3. **Third column**: Computes \\( w_3 \\cdot x + b_3 \\) for neuron 3
+
+All in one efficient operation!
+
+
+## Code Examples
+
+### NumPy Matrix Multiplication
+
+```python
+import numpy as np
+
+# Define matrices
+A = np.array([[1, -1, 0.1],
+              [2, -2, 0.2]])
+
+W = np.array([[3, 5, 7, 9],
+              [4, 6, 8, 0]])
+
+# Transpose A
+AT = A.T  # or AT = np.transpose(A)
+
+# Matrix multiplication
+Z = np.matmul(AT, W)
+# Alternative syntax: Z = AT @ W
+
+print(Z.shape)  # (3, 4)
+```
+
+
+### Vectorized Forward Propagation
+
+```python
+import numpy as np
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+def dense_vectorized(a_in, W, b):
+    """
+    Vectorized implementation of a dense layer
+    
+    Args:
+        a_in: Input activations, shape (1, n_features)
+        W: Weight matrix, shape (n_features, n_units)
+        b: Bias vector, shape (1, n_units)
+    
+    Returns:
+        a_out: Output activations, shape (1, n_units)
+    """
+    # Linear transformation
+    z = np.matmul(a_in, W) + b
+    
+    # Activation
+    a_out = sigmoid(z)
+    
+    return a_out
+
+# Example usage
+x = np.array([[200, 17]])  # Input features
+W = np.array([[1, 3, 5],
+              [-2, 4, -6]])  # Weights for 3 neurons
+b = np.array([[1, 1, 1]])   # Biases
+
+a = dense_vectorized(x, W, b)
+print(a)  # Output activations
+```
+
+
+## Performance Benefits
+
+<Note>
+**Why vectorization matters**:
+
+1. **Speed**: Matrix operations are highly optimized in NumPy/TensorFlow
+2. **GPU acceleration**: GPUs excel at matrix multiplication
+3. **Parallel processing**: Multiple computations happen simultaneously
+4. **Cleaner code**: More concise and readable
+</Note>
+
+A vectorized implementation can be **10-100x faster** than a loop-based implementation!
+
+## Summary
+
+Key concepts:
+
+<Steps>
+  <Step title="Dot Product">
+    Multiply corresponding elements and sum: \\( a \\cdot w = \\sum a_i w_i \\)
+  </Step>
+  
+  <Step title="Matrix Multiplication">
+    Rows of first matrix × columns of second matrix
+  </Step>
+  
+  <Step title="Dimension Rules">
+    (m × n) × (n × p) → (m × p). The middle dimensions must match!
+  </Step>
+  
+  <Step title="Vectorized Layers">
+    Replace loops with `np.matmul(a_in, W) + b` for efficient computation
+  </Step>
+</Steps>
+
+<Note>
+Vectorization is what makes modern deep learning possible. Without efficient matrix operations on GPUs, training large neural networks would be impractical!
+</Note>
+
+## Next Steps
+
+Now that you understand how neural networks are implemented efficiently, let's explore the bigger picture: [Is there a path to AGI?](/learning-algorithms/agi)

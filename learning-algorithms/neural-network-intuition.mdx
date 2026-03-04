@@ -1,0 +1,176 @@
+---
+title: Neural Network Intuition
+description: Building intuition for how neural networks work through practical examples of demand prediction and image recognition
+---
+
+## Introduction
+
+To understand how neural networks work, let's start with concrete examples. We'll explore demand prediction and image recognition to build intuition for these powerful algorithms.
+
+## Example: Demand Prediction
+
+Let's use an example from demand prediction where you look at a product and try to predict: **Will this product be a top seller or not?**
+
+### Simple T-shirt Sales Prediction
+
+Imagine you're selling T-shirts and want to know if a particular T-shirt will be a top seller (yes or no). You've collected data on different T-shirts sold at different prices and which ones became top sellers.
+
+<Note>
+This type of application is used by retailers today to plan better inventory levels and marketing campaigns.
+</Note>
+
+#### Input Feature: Price
+
+The input feature \\( x \\) is the price of the T-shirt.
+
+#### Logistic Regression Approach
+
+If you apply logistic regression to fit a sigmoid function to the data:
+
+```math
+f(x) = \\frac{1}{1 + e^{-(wx + b)}}
+```
+
+
+### Transition to Neural Networks
+
+To build a neural network, we use the term \\( a \\) (instead of \\( f(x) \\)) to denote the output of the logistic regression algorithm.
+
+<Note>
+**The term \\( a \\) stands for activation** - a term from neuroscience referring to how much a neuron sends a high output to other neurons downstream.
+</Note>
+
+We can think of a logistic regression unit as a very simplified model of a single neuron in the brain. Building a neural network requires taking many of these neurons and wiring them together.
+
+## Building a Neural Network
+
+### Multiple Features Example
+
+Let's look at a more complex demand prediction example with **four features**:
+
+1. **Price** - Cost of the T-shirt
+2. **Shipping Costs** - Delivery charges
+3. **Marketing Amount** - Advertising spend
+4. **Material Quality** - Fabric quality rating
+
+### Understanding Hidden Features
+
+Whether a T-shirt becomes a top seller depends on several factors:
+
+- **Affordability** - Function of price and shipping costs
+- **Awareness** - Function of marketing
+- **Perceived Quality** - Function of price and material quality
+
+
+### Neural Network Layers
+
+We group neurons together into what's called a **layer**:
+
+<Steps>
+  <Step title="Input Layer">
+    The vector of input features (price, shipping costs, marketing, material quality)
+  </Step>
+  
+  <Step title="Hidden Layer">
+    Computes intermediate features like affordability, awareness, and perceived quality. Called "hidden" because these values are **hidden** in the training data - we don't explicitly provide them.
+  </Step>
+  
+  <Step title="Output Layer">
+    Produces the final prediction (probability of being a top seller)
+  </Step>
+</Steps>
+
+### Simplifying the Network
+
+Rather than manually deciding which neurons take which features as inputs, **each neuron in a layer can access all features from the previous layer**:
+
+
+The neural network learns through setting parameters appropriately to focus on the most relevant features for each neuron.
+
+## Key Insight: Automatic Feature Learning
+
+One of the most powerful aspects of neural networks:
+
+<Note>
+**Instead of manual feature engineering, neural networks can learn their own features** to make the learning problem easier. This makes neural networks one of the most powerful learning algorithms today.
+</Note>
+
+### Comparison with Manual Feature Engineering
+
+In traditional approaches, you might manually combine features (e.g., multiplying frontage × depth to get lawn size for housing prediction).
+
+With neural networks:
+- The network learns its own intermediate features
+- Reduces need for manual feature engineering
+- Often discovers better features than humans would design
+
+## Multiple Hidden Layers
+
+Neural networks can have more than one hidden layer:
+
+
+### Architecture Decisions
+
+When building a neural network, you must decide:
+1. **How many hidden layers** to use
+2. **How many neurons per hidden layer**
+
+A common pattern: More hidden units initially, then fewer as you approach the output layer.
+
+## Computer Vision Example: Face Recognition
+
+Let's see how neural networks work for computer vision applications.
+
+### Image Representation
+
+A 1,000 × 1,000 pixel image is represented as:
+- A grid of pixel intensity values (0-255)
+- 197 might be the brightness of the upper-left pixel
+- Unrolled into a vector of **1 million pixel values**
+
+
+### Neural Network for Face Recognition
+
+The network architecture:
+
+
+1. **Input layer** - 1 million pixel brightness values
+2. **First hidden layer** - Learns to detect short edges and lines
+3. **Second hidden layer** - Groups edges to detect parts of faces (eyes, noses, ears)
+4. **Third hidden layer** - Combines parts to detect complete face shapes
+5. **Output layer** - Identifies the person
+
+### Automatic Feature Detection
+
+<Note>
+The remarkable thing: The neural network learns these feature detectors **all by itself** from data. No one tells it to:
+- Look for edges in the first layer
+- Detect eyes and noses in the second layer
+- Find complete face shapes in the third layer
+
+It figures this out automatically!
+</Note>
+
+
+### Different Data, Different Features
+
+If you train the same neural network architecture on **car images** instead:
+- First layer: Learns to detect edges (similar)
+- Second layer: Learns to detect car parts
+- Third layer: Learns complete car shapes
+
+
+Just by feeding it different data, the neural network automatically learns to detect very different features!
+
+## Summary
+
+Neural networks are powerful because they:
+
+1. **Learn hierarchical features** - From simple to complex patterns
+2. **Automatic feature discovery** - No manual feature engineering needed
+3. **Adapt to different domains** - Same architecture works for faces, cars, etc.
+4. **Build on logistic regression** - But with learned features that make predictions easier
+
+## Next Steps
+
+Now that you have intuition for how neural networks work, let's look more deeply into the [concrete mathematics and implementation details](/learning-algorithms/neural-network-model) of how you actually build these networks.

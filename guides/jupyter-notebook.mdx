@@ -1,0 +1,124 @@
+---
+title: Jupyter Notebook Setup
+description: Learn how to install and use Jupyter Notebook for machine learning and data science with Mindect
+---
+
+## Introduction
+
+Jupyter Notebook is the most widely used tool by machine learning and data science practitioners today. It's the default environment that many of us use to code, experiment, and try things out.
+
+By reading through and running the code in Jupyter notebooks on your device, you can see how machine learning code runs. You can complete tutorials relatively quickly just by running code one line at a time from top to bottom.
+
+## Prerequisites
+
+Before installing Jupyter Notebook, ensure you have the following:
+
+<Callout type="info">
+  You should have PIP (Python Package Installer) installed on your device. PIP comes bundled with Python 3.4+.
+</Callout>
+
+To verify if PIP is installed, run:
+
+```bash title="terminal"
+pip --version
+```
+
+## Installation
+
+Follow these steps to install Jupyter Notebook on your machine:
+
+<Steps>
+<Step>
+### Install Jupyter Notebook
+
+Run the following command to install Jupyter Notebook:
+
+```bash title="terminal"
+pip install notebook
+```
+
+This will download and install Jupyter Notebook along with its dependencies.
+
+</Step>
+<Step>
+### Launch Jupyter Notebook
+
+To start the Jupyter Notebook server, use the following command:
+
+```bash title="terminal"
+jupyter notebook
+```
+
+This will:
+- Start the Jupyter Notebook server
+- Open your default web browser
+- Display the Jupyter Notebook dashboard at `http://localhost:8888`
+
+</Step>
+</Steps>
+
+## Using Jupyter Notebook
+
+### Understanding Cells
+
+Jupyter Notebooks contain two types of cells:
+
+1. **Markdown Cells**: These contain text that describes the code. Use these for documentation, explanations, and notes.
+
+2. **Code Cells**: These contain executable code. You can run Python code and see the output directly below the cell.
+
+### Running Code
+
+To run a code cell:
+- Click on the cell to select it
+- Press `Shift` + `Enter` to execute the code
+- The output will appear directly below the cell
+
+### Navigation Tips
+
+- Scroll up and down to browse through the notebook
+- Mouseover different menus to explore various options
+- Use the toolbar to add, delete, or modify cells
+- Save your work frequently using `Ctrl` + `S` (or `Cmd` + `S` on Mac)
+
+## Troubleshooting
+
+### Jupyter command not found
+
+If you get a "command not found" error, try:
+
+```bash title="terminal"
+python -m notebook
+```
+
+Or ensure your Python Scripts directory is in your PATH.
+
+### Port already in use
+
+If port 8888 is already in use, specify a different port:
+
+```bash title="terminal"
+jupyter notebook --port 8889
+```
+
+### Permission errors during installation
+
+If you encounter permission errors, try installing with the `--user` flag:
+
+```bash title="terminal"
+pip install --user notebook
+```
+
+## Additional Resources
+
+- [Official Jupyter Documentation](https://jupyter.org/)
+- [Jupyter Notebook Installation Guide](https://jupyter.org/install)
+- [Jupyter Notebook Tutorial](https://jupyter-notebook.readthedocs.io/)
+
+## Next Steps
+
+Now that you have Jupyter Notebook installed, you can:
+- Download Mindect's introductory notebooks
+- Explore machine learning examples
+- Run supervised and unsupervised learning code
+- Experiment with your own data science projects

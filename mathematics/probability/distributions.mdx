@@ -1,0 +1,356 @@
+---
+title: Probability Distributions
+description: Explore common probability distributions used in statistics and machine learning, from discrete to continuous distributions.
+---
+
+## Introduction
+
+Probability distributions describe how probabilities are distributed over possible values of a random variable. Understanding distributions is essential for statistical analysis and machine learning.
+
+## Setup
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy import stats
+
+sns.set_style('whitegrid')
+plt.rcParams['figure.figsize'] = (12, 6)
+```
+
+## Discrete Distributions
+
+Discrete distributions describe random variables that take countable values.
+
+### Bernoulli Distribution
+
+Models a single binary outcome (success/failure).
+
+**Parameters**: $p$ (probability of success)
+
+$$P(X = 1) = p, \quad P(X = 0) = 1-p$$
+
+```python
+# Bernoulli distribution with p=0.7
+p = 0.7
+
+# Simulate
+samples = np.random.binomial(1, p, size=1000)
+
+# Visualize
+plt.figure(figsize=(10, 5))
+unique, counts = np.unique(samples, return_counts=True)
+plt.bar(unique, counts/len(samples), width=0.3, alpha=0.8, edgecolor='black')
+plt.axhline(y=p, color='r', linestyle='--', label=f'Theoretical P(X=1)={p}')
+plt.axhline(y=1-p, color='g', linestyle='--', label=f'Theoretical P(X=0)={1-p}')
+plt.xlabel('Value')
+plt.ylabel('Probability')
+plt.title('Bernoulli Distribution')
+plt.xticks([0, 1])
+plt.legend()
+plt.show()
+
+print(f"Empirical P(X=1): {np.mean(samples):.3f}")
+print(f"Expected value: {p}")
+print(f"Variance: {p*(1-p):.3f}")
+```
+
+<Note>
+**Applications**: Coin flips, binary classification, A/B testing
+</Note>
+
+### Binomial Distribution
+
+Number of successes in $n$ independent Bernoulli trials.
+
+**Parameters**: $n$ (trials), $p$ (success probability)
+
+$$P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$$
+
+```python
+# Binomial: 10 coin flips, p=0.5
+n, p = 10, 0.5
+
+# Simulate
+samples = np.random.binomial(n, p, size=10000)
+
+# Theoretical distribution
+x = np.arange(0, n+1)
+theoretical = stats.binom.pmf(x, n, p)
+
+# Plot
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Histogram of samples
+axes[0].hist(samples, bins=np.arange(-0.5, n+1.5, 1), density=True, 
+            alpha=0.7, edgecolor='black', label='Empirical')
+axes[0].plot(x, theoretical, 'ro-', linewidth=2, markersize=8, label='Theoretical')
+axes[0].set_xlabel('Number of Successes')
+axes[0].set_ylabel('Probability')
+axes[0].set_title(f'Binomial Distribution (n={n}, p={p})')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+# Effect of changing p
+for p_val in [0.3, 0.5, 0.7]:
+    pmf = stats.binom.pmf(x, n, p_val)
+    axes[1].plot(x, pmf, 'o-', linewidth=2, label=f'p={p_val}')
+
+axes[1].set_xlabel('Number of Successes')
+axes[1].set_ylabel('Probability')
+axes[1].set_title(f'Binomial Distribution with Different p (n={n})')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+print(f"Mean: {np.mean(samples):.2f} (expected: {n*p})")
+print(f"Variance: {np.var(samples):.2f} (expected: {n*p*(1-p):.2f})")
+```
+
+<Note>
+**Applications**: Number of defective items, click-through rates, survey responses
+</Note>
+
+### Poisson Distribution
+
+Number of events occurring in fixed time/space interval.
+
+**Parameter**: $\lambda$ (average rate)
+
+$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}$$
+
+```python
+# Poisson with λ=3
+lambda_param = 3
+
+# Simulate
+samples = np.random.poisson(lambda_param, size=10000)
+
+# Theoretical
+x = np.arange(0, 15)
+theoretical = stats.poisson.pmf(x, lambda_param)
+
+plt.figure(figsize=(12, 6))
+plt.hist(samples, bins=np.arange(-0.5, 15.5, 1), density=True,
+        alpha=0.7, edgecolor='black', label='Empirical')
+plt.plot(x, theoretical, 'ro-', linewidth=2, markersize=8, label='Theoretical')
+plt.xlabel('Number of Events')
+plt.ylabel('Probability')
+plt.title(f'Poisson Distribution (λ={lambda_param})')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+print(f"Mean: {np.mean(samples):.2f} (expected: {lambda_param})")
+print(f"Variance: {np.var(samples):.2f} (expected: {lambda_param})")
+print(f"\nNote: For Poisson, mean = variance = λ")
+```
+
+<Note>
+**Applications**: Website visits per hour, emails per day, defects per unit, arrival processes
+</Note>
+
+## Continuous Distributions
+
+Continuous distributions describe random variables over continuous ranges.
+
+### Uniform Distribution
+
+All values in interval equally likely.
+
+**Parameters**: $a$ (min), $b$ (max)
+
+$$f(x) = \frac{1}{b-a} \text{ for } a \leq x \leq b$$
+
+```python
+# Uniform [0, 1]
+a, b = 0, 1
+samples = np.random.uniform(a, b, size=10000)
+
+plt.figure(figsize=(12, 5))
+plt.hist(samples, bins=50, density=True, alpha=0.7, edgecolor='black', label='Empirical')
+plt.axhline(y=1/(b-a), color='r', linestyle='--', linewidth=2, label='Theoretical density')
+plt.xlabel('Value')
+plt.ylabel('Density')
+plt.title(f'Uniform Distribution [{a}, {b}]')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+mean_theoretical = (a + b) / 2
+var_theoretical = (b - a)**2 / 12
+
+print(f"Mean: {np.mean(samples):.3f} (expected: {mean_theoretical})")
+print(f"Variance: {np.var(samples):.3f} (expected: {var_theoretical:.3f})")
+```
+
+### Normal (Gaussian) Distribution
+
+The most important distribution in statistics!
+
+**Parameters**: $\mu$ (mean), $\sigma$ (standard deviation)
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}$$
+
+```python
+# Normal distribution
+mu, sigma = 0, 1
+samples = np.random.normal(mu, sigma, size=10000)
+
+# Theoretical PDF
+x = np.linspace(-4, 4, 100)
+theoretical = stats.norm.pdf(x, mu, sigma)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# PDF
+axes[0].hist(samples, bins=50, density=True, alpha=0.7, 
+            edgecolor='black', label='Empirical')
+axes[0].plot(x, theoretical, 'r-', linewidth=2, label='Theoretical PDF')
+axes[0].set_xlabel('Value')
+axes[0].set_ylabel('Density')
+axes[0].set_title(f'Normal Distribution (μ={mu}, σ={sigma})')
+axes[0].legend()
+axes[0].grid(True, alpha=0.3)
+
+# Different parameters
+for mu_val, sigma_val in [(0, 1), (0, 2), (2, 1)]:
+    x_range = np.linspace(-6, 6, 100)
+    pdf = stats.norm.pdf(x_range, mu_val, sigma_val)
+    axes[1].plot(x_range, pdf, linewidth=2, 
+                label=f'μ={mu_val}, σ={sigma_val}')
+
+axes[1].set_xlabel('Value')
+axes[1].set_ylabel('Density')
+axes[1].set_title('Normal Distribution with Different Parameters')
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+
+print(f"Mean: {np.mean(samples):.3f} (expected: {mu})")
+print(f"Std: {np.std(samples):.3f} (expected: {sigma})")
+print(f"\n68-95-99.7 Rule:")
+print(f"Within 1σ: {np.sum(np.abs(samples) <= 1)/len(samples)*100:.1f}% (expected: 68%)")
+print(f"Within 2σ: {np.sum(np.abs(samples) <= 2)/len(samples)*100:.1f}% (expected: 95%)")
+print(f"Within 3σ: {np.sum(np.abs(samples) <= 3)/len(samples)*100:.1f}% (expected: 99.7%)")
+```
+
+<Note>
+**Applications**: Heights, weights, measurement errors, test scores, natural phenomena
+</Note>
+
+### Exponential Distribution
+
+Time between events in Poisson process.
+
+**Parameter**: $\lambda$ (rate)
+
+$$f(x) = \lambda e^{-\lambda x} \text{ for } x \geq 0$$
+
+```python
+# Exponential with λ=0.5
+lambda_param = 0.5
+samples = np.random.exponential(1/lambda_param, size=10000)
+
+x = np.linspace(0, 10, 100)
+theoretical = stats.expon.pdf(x, scale=1/lambda_param)
+
+plt.figure(figsize=(12, 6))
+plt.hist(samples, bins=50, density=True, alpha=0.7, edgecolor='black', label='Empirical')
+plt.plot(x, theoretical, 'r-', linewidth=2, label='Theoretical PDF')
+plt.xlabel('Time Between Events')
+plt.ylabel('Density')
+plt.title(f'Exponential Distribution (λ={lambda_param})')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+
+print(f"Mean: {np.mean(samples):.2f} (expected: {1/lambda_param})")
+print(f"Variance: {np.var(samples):.2f} (expected: {1/lambda_param**2})")
+```
+
+<Note>
+**Applications**: Waiting times, lifetimes, time between failures
+</Note>
+
+## Central Limit Theorem
+
+The sum (or average) of many independent random variables approaches normal distribution.
+
+```python
+# Demonstrate CLT with uniform distribution
+fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+
+for idx, n in enumerate([1, 5, 30]):
+    # Sample n values and take their mean, repeat many times
+    means = [np.mean(np.random.uniform(0, 1, n)) for _ in range(10000)]
+    
+    # Histogram
+    axes[0, idx].hist(means, bins=50, density=True, alpha=0.7, edgecolor='black')
+    axes[0, idx].set_title(f'Sample Size n={n}')
+    axes[0, idx].set_xlabel('Sample Mean')
+    axes[0, idx].set_ylabel('Density')
+    axes[0, idx].grid(True, alpha=0.3)
+    
+    # Q-Q plot
+    stats.probplot(means, dist="norm", plot=axes[1, idx])
+    axes[1, idx].set_title(f'Q-Q Plot (n={n})')
+    axes[1, idx].grid(True, alpha=0.3)
+
+plt.suptitle('Central Limit Theorem: Means of Uniform Samples', fontsize=14, y=1.02)
+plt.tight_layout()
+plt.show()
+
+print("Notice: As n increases, the distribution of means becomes more normal!")
+print("This works regardless of the original distribution.")
+```
+
+<Warning>
+**Central Limit Theorem**: For large enough $n$, the distribution of sample means approximates normal distribution, regardless of the population distribution!
+
+This is why the normal distribution is so important in statistics.
+</Warning>
+
+## Distribution Comparison
+
+<CardGroup cols={2}>
+  <Card title="Discrete vs Continuous" icon="binary">
+    - **Discrete**: PMF (Probability Mass Function), sum = 1
+    - **Continuous**: PDF (Probability Density Function), integral = 1
+  </Card>
+  
+  <Card title="Choosing Distribution" icon="list-check">
+    Consider:
+    - Type of data (discrete/continuous)
+    - Range of values
+    - Shape of data
+    - Domain knowledge
+  </Card>
+</CardGroup>
+
+## Summary Table
+
+| Distribution | Type | Parameters | Mean | Variance | Use Case |
+|--------------|------|------------|------|----------|---------|
+| Bernoulli | Discrete | $p$ | $p$ | $p(1-p)$ | Single trial |
+| Binomial | Discrete | $n, p$ | $np$ | $np(1-p)$ | Multiple trials |
+| Poisson | Discrete | $\lambda$ | $\lambda$ | $\lambda$ | Count events |
+| Uniform | Continuous | $a, b$ | $\frac{a+b}{2}$ | $\frac{(b-a)^2}{12}$ | Equal probability |
+| Normal | Continuous | $\mu, \sigma$ | $\mu$ | $\sigma^2$ | Natural variation |
+| Exponential | Continuous | $\lambda$ | $\frac{1}{\lambda}$ | $\frac{1}{\lambda^2}$ | Waiting times |
+
+## Key Takeaways
+
+- Distributions describe probability over possible values
+- Choose distribution based on data characteristics
+- Normal distribution is fundamental due to CLT
+- Understanding distributions helps in:
+  - Statistical inference
+  - Hypothesis testing
+  - Machine learning model selection
+  - Data simulation and generation

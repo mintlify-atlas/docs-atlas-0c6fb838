@@ -1,0 +1,397 @@
+---
+title: Birthday Problem
+description: Explore four variations of the famous birthday problem to see how counter-intuitive probabilities can be, using both simulation and analytical solutions.
+---
+
+## Introduction
+
+The birthday problem is a famous probability paradox that demonstrates how our intuition about probability can be misleading. You'll explore four variations, using simulations to build intuition before deriving analytical solutions.
+
+## Setup
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+%matplotlib widget
+```
+
+## The Setting
+
+All problems involve a classroom of students and questions about matching birthdays:
+
+1. What is the minimum number of students needed for a given probability of a match?
+2. Given $n$ students, what is the probability of a match?
+
+Both perspectives model the same situation from different angles.
+
+## Problem 1: Match with Predefined Date
+
+<Note>
+**Question**: Given a predefined date, what value of $n$ gives probability $\geq$ 0.5 of at least one student matching that date?
+</Note>
+
+### Simulation
+
+First, create a simulation function:
+
+```python
+def simulate(problem_func, n_students=365, n_simulations=1000):
+    matches = 0
+    
+    for _ in range(n_simulations):
+        if problem_func(n_students):
+            matches += 1
+    
+    return matches / n_simulations
+```
+
+Define Problem 1:
+
+```python
+def problem_1(n_students):
+    # Predefined birthday
+    predef_bday = np.random.randint(0, 365)
+    
+    # Generate birthdays for students
+    gen_bdays = np.random.randint(0, 365, n_students)
+    
+    # Check if predefined birthday is among students
+    return predef_bday in gen_bdays
+```
+
+Run simulation for different classroom sizes:
+
+```python
+classroom_sizes = range(1, 500, 5)
+simulated_probs = [simulate(problem_1, n_students=n, n_simulations=1000) 
+                   for n in classroom_sizes]
+
+plt.figure(figsize=(10, 6))
+plt.plot(classroom_sizes, simulated_probs, 'b.', alpha=0.6)
+plt.axhline(y=0.5, color='r', linestyle='--', label='Probability = 0.5')
+plt.xlabel('Number of Students')
+plt.ylabel('Probability of Match')
+plt.title('Problem 1: Match with Predefined Date')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Analytical Solution
+
+Let $D$ be the predefined date and $S_i$ be the event that student $i$ has birthday $D$.
+
+$$P(S_i) = \frac{1}{365}$$
+
+Probability that student $i$ does NOT have birthday $D$:
+
+$$P(S_i^c) = 1 - \frac{1}{365}$$
+
+For $n$ independent students, probability that NONE match:
+
+$$P(\mathcal{S}^c) = \left(1 - \frac{1}{365}\right)^n$$
+
+Probability that AT LEAST ONE matches:
+
+$$P(\mathcal{S}) = 1 - \left(1 - \frac{1}{365}\right)^n$$
+
+Find $n$ where $P(\mathcal{S}) \geq 0.5$:
+
+$$
+\begin{align}
+1 - \left(\frac{364}{365}\right)^n &\geq \frac{1}{2} \\
+\left(\frac{364}{365}\right)^n &\leq \frac{1}{2} \\
+n \ln\left(\frac{364}{365}\right) &\leq -\ln 2 \\
+n &\geq \frac{\ln 2}{-\ln(364/365)} \approx \frac{0.693}{0.003} \approx 253
+\end{align}
+$$
+
+<Tip>
+**Answer**: Need at least **253 students** for 50% probability of matching a predefined date.
+</Tip>
+
+## Problem 2: Match with Random Student
+
+<Note>
+**Question**: If you randomly select one student, what value of $n$ gives probability $\geq$ 0.5 that another student shares their birthday?
+</Note>
+
+### Simulation
+
+```python
+def problem_2(n_students):
+    # Generate birthdays
+    gen_bdays = np.random.randint(0, 365, n_students)
+    
+    # Pick one student at random
+    rnd_index = np.random.randint(0, len(gen_bdays))
+    rnd_bday = gen_bdays[rnd_index]
+    
+    # Remove selected student from pool
+    remaining_bdays = np.delete(gen_bdays, rnd_index)
+    
+    # Check if another student shares the birthday
+    return rnd_bday in remaining_bdays
+
+# Simulate
+simulated_probs_2 = [simulate(problem_2, n_students=n, n_simulations=1000)
+                     for n in classroom_sizes]
+
+plt.figure(figsize=(10, 6))
+plt.plot(classroom_sizes, simulated_probs_2, 'g.', alpha=0.6)
+plt.axhline(y=0.5, color='r', linestyle='--', label='Probability = 0.5')
+plt.xlabel('Number of Students')
+plt.ylabel('Probability of Match')
+plt.title('Problem 2: Match with Random Student')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Analytical Solution
+
+This is similar to Problem 1, but with $n-1$ students (after removing the selected student):
+
+$$P(n) = 1 - \left(1 - \frac{1}{365}\right)^{n-1}$$
+
+Solving $P(n) \geq 0.5$:
+
+$$n \geq 254$$
+
+<Tip>
+**Answer**: Need **254 students** - only one more than Problem 1!
+</Tip>
+
+## Problem 3: Any Two Students Match (Classic Birthday Problem)
+
+<Note>
+**Question**: What value of $n$ gives probability $\geq$ 0.5 that ANY two students share a birthday?
+</Note>
+
+This is the most famous version!
+
+### Simulation
+
+```python
+def problem_3(n_students):
+    # Generate birthdays
+    gen_bdays = np.random.randint(0, 365, n_students)
+    
+    # Get unique birthdays
+    unique_bdays = np.array(list(set(gen_bdays)))
+    
+    # If lengths differ, there's a duplicate
+    return len(unique_bdays) != len(gen_bdays)
+
+# Simulate for smaller classroom sizes
+small_classroom_sizes = range(1, 100)
+simulated_probs_3 = [simulate(problem_3, n_students=n, n_simulations=1000)
+                     for n in small_classroom_sizes]
+
+plt.figure(figsize=(10, 6))
+plt.plot(small_classroom_sizes, simulated_probs_3, 'r.', alpha=0.6)
+plt.axhline(y=0.5, color='g', linestyle='--', label='Probability = 0.5')
+plt.axvline(x=23, color='orange', linestyle=':', label='n = 23')
+plt.xlabel('Number of Students')
+plt.ylabel('Probability of Match')
+plt.title('Problem 3: Any Two Students Match (Classic)')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Analytical Solution
+
+Define $Q_i$ = probability that student $i$ has a different birthday from all previous students.
+
+$$
+\begin{align}
+Q_1 &= 1 \\
+Q_2 &= \frac{364}{365} \\
+Q_3 &= \frac{363}{365} \\
+&\vdots \\
+Q_n &= \frac{365-(n-1)}{365}
+\end{align}
+$$
+
+Probability that NO two students match:
+
+$$Q = Q_1 \cdot Q_2 \cdot \ldots \cdot Q_n = 1 \cdot \frac{364}{365} \cdot \frac{363}{365} \cdots \frac{365-(n-1)}{365}$$
+
+Probability that AT LEAST two match:
+
+$$P = 1 - Q$$
+
+Using approximation $1 - x \approx e^{-x}$ for small $x$:
+
+$$Q \approx e^{-\frac{1}{365}} \cdot e^{-\frac{2}{365}} \cdots e^{-\frac{n-1}{365}} = e^{-\frac{1+2+\cdots+(n-1)}{365}}$$
+
+Using $1 + 2 + \cdots + (n-1) = \frac{n(n-1)}{2}$:
+
+$$Q \approx e^{-\frac{n(n-1)}{730}}$$
+
+Solving $P \geq 0.5$:
+
+$$
+\begin{align}
+1 - e^{-\frac{n(n-1)}{730}} &\geq \frac{1}{2} \\
+\frac{n(n-1)}{730} &\geq \ln 2 \\
+n(n-1) &\geq 730 \cdot 0.693 \approx 506 \\
+n &\approx 23
+\end{align}
+$$
+
+<Warning>
+**Surprising Answer**: Need only **23 students** for 50% probability that two share a birthday!
+
+This is counter-intuitive because we're looking at ALL possible pairs, not just one specific match.
+</Warning>
+
+### Why So Low?
+
+With 23 people, there are $\binom{23}{2} = \frac{23 \times 22}{2} = 253$ pairs of people. Each pair has a $\frac{1}{365}$ chance of matching.
+
+## Problem 4: Match Between Two Classrooms
+
+<Note>
+**Question**: Given two classrooms with $n$ students each, what value of $n$ gives probability $\geq$ 0.5 of at least one match between classrooms?
+</Note>
+
+### Simulation
+
+```python
+def problem_4(n_students):
+    # Generate birthdays for classroom 1
+    gen_bdays_1 = np.random.randint(0, 365, n_students)
+    
+    # Generate birthdays for classroom 2
+    gen_bdays_2 = np.random.randint(0, 365, n_students)
+    
+    # Check for any match between classrooms
+    return np.isin(gen_bdays_1, gen_bdays_2).any()
+
+# Simulate
+simulated_probs_4 = [simulate(problem_4, n_students=n, n_simulations=1000)
+                     for n in small_classroom_sizes]
+
+plt.figure(figsize=(10, 6))
+plt.plot(small_classroom_sizes, simulated_probs_4, 'm.', alpha=0.6)
+plt.axhline(y=0.5, color='r', linestyle='--', label='Probability = 0.5')
+plt.axvline(x=16, color='orange', linestyle=':', label='n = 16')
+plt.xlabel('Number of Students per Classroom')
+plt.ylabel('Probability of Match')
+plt.title('Problem 4: Match Between Two Classrooms')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Analytical Solution
+
+This is similar to Problem 1, but with $n$ dates to compare (from classroom 1) instead of one.
+
+For each student in classroom 2, probability of NOT matching ANY student in classroom 1:
+
+$$Q_1 = \left(1 - \frac{1}{365}\right)^n$$
+
+For $n$ students in classroom 2:
+
+$$Q = \left(1 - \frac{1}{365}\right)^{n^2}$$
+
+Probability of at least one match:
+
+$$P \approx 1 - e^{-\frac{n^2}{365}}$$
+
+Solving $P \geq 0.5$:
+
+$$n \geq \sqrt{\ln 2 \cdot 365} \approx 15.9$$
+
+<Tip>
+**Answer**: Need **16 students** per classroom!
+</Tip>
+
+## Summary Comparison
+
+| Problem | Description | Students Needed |
+|---------|-------------|----------------|
+| 1 | Match with predefined date | 253 |
+| 2 | Match with random student | 254 |
+| 3 | Any two match (classic) | **23** |
+| 4 | Match between classrooms | **16** |
+
+<CardGroup cols={2}>
+  <Card title="Key Insight 1" icon="users">
+    Problems 1-2 need ~250 students because we're comparing against a single fixed date
+  </Card>
+  <Card title="Key Insight 2" icon="people-group">
+    Problem 3 needs only 23 because we're checking ALL possible pairs (~253 pairs)
+  </Card>
+  <Card title="Key Insight 3" icon="building">
+    Problem 4 needs only 16 per room because we have n² comparisons (16×16 = 256)
+  </Card>
+  <Card title="Key Insight 4" icon="brain">
+    Our intuition fails because we underestimate the number of comparisons being made!
+  </Card>
+</CardGroup>
+
+## Visualization: All Four Problems
+
+```python
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# Problem 1
+axes[0, 0].plot(classroom_sizes, simulated_probs, 'b.', alpha=0.6)
+axes[0, 0].axhline(y=0.5, color='r', linestyle='--')
+axes[0, 0].axvline(x=253, color='orange', linestyle=':')
+axes[0, 0].set_title('Problem 1: Predefined Date (n=253)')
+axes[0, 0].set_xlabel('Students')
+axes[0, 0].set_ylabel('Probability')
+axes[0, 0].grid(True, alpha=0.3)
+
+# Problem 2  
+axes[0, 1].plot(classroom_sizes, simulated_probs_2, 'g.', alpha=0.6)
+axes[0, 1].axhline(y=0.5, color='r', linestyle='--')
+axes[0, 1].axvline(x=254, color='orange', linestyle=':')
+axes[0, 1].set_title('Problem 2: Random Student (n=254)')
+axes[0, 1].set_xlabel('Students')
+axes[0, 1].set_ylabel('Probability')
+axes[0, 1].grid(True, alpha=0.3)
+
+# Problem 3
+axes[1, 0].plot(small_classroom_sizes, simulated_probs_3, 'r.', alpha=0.6)
+axes[1, 0].axhline(y=0.5, color='g', linestyle='--')
+axes[1, 0].axvline(x=23, color='orange', linestyle=':')
+axes[1, 0].set_title('Problem 3: Any Two Match (n=23)')
+axes[1, 0].set_xlabel('Students')
+axes[1, 0].set_ylabel('Probability')
+axes[1, 0].grid(True, alpha=0.3)
+
+# Problem 4
+axes[1, 1].plot(small_classroom_sizes, simulated_probs_4, 'm.', alpha=0.6)
+axes[1, 1].axhline(y=0.5, color='r', linestyle='--')
+axes[1, 1].axvline(x=16, color='orange', linestyle=':')
+axes[1, 1].set_title('Problem 4: Two Classrooms (n=16)')
+axes[1, 1].set_xlabel('Students per Classroom')
+axes[1, 1].set_ylabel('Probability')
+axes[1, 1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+## Lessons Learned
+
+1. **Simulation first**: Build intuition before diving into analytical solutions
+2. **Count comparisons**: The number of comparisons matters more than the number of items
+3. **Complement rule**: Often easier to calculate "none match" than "at least one matches"
+4. **Approximations help**: $1-x \approx e^{-x}$ simplifies calculations
+5. **Intuition fails**: Probability can be highly counter-intuitive!
+
+## Applications
+
+- **Cryptography**: Birthday attacks on hash functions
+- **Data structures**: Hash collision probabilities
+- **Quality control**: Duplicate detection
+- **Social networks**: Common connections
+- **Cybersecurity**: Password collisions

@@ -1,0 +1,341 @@
+---
+title: Differentiation Methods
+description: Master symbolic, numerical, and automatic differentiation techniques in Python for machine learning applications.
+---
+
+## Overview
+
+Differentiation is essential for optimization in machine learning. This guide covers three approaches to computing derivatives in Python, each with distinct advantages and use cases.
+
+## Method Comparison
+
+<CardGroup cols={3}>
+  <Card title="Symbolic" icon="infinity">
+    Exact analytical derivatives using SymPy
+  </Card>
+  <Card title="Numerical" icon="hashtag">
+    Finite difference approximations using NumPy
+  </Card>
+  <Card title="Automatic" icon="microchip">
+    Computational graphs using JAX
+  </Card>
+</CardGroup>
+
+## Symbolic Differentiation with SymPy
+
+### Basic Setup
+
+```python
+from sympy import *
+
+# Define symbolic variables
+x, y = symbols('x y')
+
+# Create expressions
+f = x**2
+print(f"f(x) = {f}")
+```
+
+### Computing Derivatives
+
+```python
+# First derivative
+dfdx = diff(f, x)
+print(f"f'(x) = {dfdx}")
+
+# Second derivative
+d2fdx2 = diff(f, x, 2)
+print(f"f''(x) = {d2fdx2}")
+```
+
+### Common Functions
+
+```python
+# Exponential and trigonometric
+expr = exp(-2*x) + 3*sin(3*x)
+dexpr = diff(expr, x)
+print(f"d/dx[e^(-2x) + 3sin(3x)] = {dexpr}")
+
+# Logarithmic
+log_expr = log(x**2 + 1)
+dlog_expr = diff(log_expr, x)
+print(f"d/dx[ln(x² + 1)] = {dlog_expr}")
+```
+
+### Advantages
+
+✅ Produces exact, analytical results  
+✅ Simplifies complex expressions  
+✅ Good for educational purposes  
+
+### Limitations
+
+❌ Expression swell (outputs become too complex)  
+❌ Cannot handle all functions (e.g., absolute value)  
+❌ Slower for large-scale computations  
+
+## Numerical Differentiation with NumPy
+
+### Using np.gradient
+
+The `np.gradient` function computes numerical derivatives using finite differences:
+
+```python
+import numpy as np
+
+# Define function
+def f(x):
+    return x**2
+
+# Create array of x values
+x = np.linspace(-5, 5, 100)
+
+# Compute derivative
+dfdx_numerical = np.gradient(f(x), x)
+```
+
+### Visualization
+
+```python
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, f(x), 'r-', label='f(x) = x²', linewidth=2)
+plt.plot(x, dfdx_numerical, 'b-', label="f'(x) ≈ 2x", linewidth=2)
+plt.plot(x, 2*x, 'g--', label="f'(x) exact = 2x", linewidth=1)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Complex Functions
+
+```python
+def g(x):
+    return np.exp(-x**2) * np.sin(3*x)
+
+x = np.linspace(-3, 3, 200)
+dgdx = np.gradient(g(x), x)
+
+plt.figure(figsize=(10, 6))
+plt.plot(x, g(x), label='g(x)')
+plt.plot(x, dgdx, label="g'(x) (numerical)")
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+### Advantages
+
+✅ Works with any function  
+✅ Simple to implement  
+✅ No need to derive formulas  
+
+### Limitations
+
+❌ Approximate (not exact)  
+❌ Inaccurate at discontinuities  
+❌ Slow for repeated evaluations  
+❌ Requires choosing step size carefully  
+
+## Automatic Differentiation with JAX
+
+### Why JAX?
+
+Automatic differentiation combines the best of both worlds:
+- Exact derivatives like symbolic methods
+- Efficient computation like numerical methods
+- Optimized for machine learning
+
+### Basic Usage
+
+```python
+from jax import grad, vmap
+import jax.numpy as jnp
+
+# Define function
+def f(x):
+    return x**2
+
+# Compute derivative at a point
+df = grad(f)
+print(f"f'(3.0) = {df(3.0)}")  # Output: 6.0
+```
+
+### Vectorization
+
+Use `vmap` to apply derivatives to arrays:
+
+```python
+x = jnp.linspace(-5, 5, 100)
+
+# Vectorized derivative computation
+dfdx_auto = vmap(grad(f))(x)
+
+print(f"Shape: {dfdx_auto.shape}")
+print(f"First values: {dfdx_auto[:5]}")
+```
+
+### Higher-Order Derivatives
+
+```python
+# Second derivative
+d2f = grad(grad(f))
+print(f"f''(3.0) = {d2f(3.0)}")  # Output: 2.0
+
+# Third derivative
+d3f = grad(grad(grad(f)))
+print(f"f'''(3.0) = {d3f(3.0)}")  # Output: 0.0
+```
+
+### Multivariate Functions
+
+```python
+def g(x, y):
+    return x**2 + 3*x*y + y**2
+
+# Partial derivatives
+from jax import jacfwd
+
+# Jacobian (all partial derivatives)
+jac_g = jacfwd(g, argnums=(0, 1))
+print(f"∇g(2.0, 3.0) = {jac_g(2.0, 3.0)}")
+```
+
+### Complex Example
+
+```python
+def complex_function(x):
+    return jnp.exp(-x**2) * jnp.sin(3*x) + jnp.log(jnp.abs(x) + 1)
+
+x = jnp.linspace(-3, 3, 200)
+f_vals = vmap(complex_function)(x)
+df_vals = vmap(grad(complex_function))(x)
+
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.plot(x, f_vals, label='f(x)')
+plt.title('Function')
+plt.grid(True)
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(x, df_vals, label="f'(x)", color='orange')
+plt.title('Derivative')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+```
+
+### Advantages
+
+✅ Exact derivatives  
+✅ Very fast for repeated computations  
+✅ Handles complex functions automatically  
+✅ GPU/TPU acceleration available  
+✅ Ideal for neural networks  
+
+### Limitations
+
+❌ Requires learning JAX syntax  
+❌ Arrays are immutable  
+❌ Only works with JAX-compatible functions  
+
+## Performance Comparison
+
+```python
+import time
+
+def benchmark_derivatives(f, x_array, n_iterations=100):
+    results = {}
+    
+    # Symbolic (SymPy)
+    from sympy import symbols, diff, lambdify
+    x_sym = symbols('x')
+    f_sym = x_sym**2  # Example
+    df_sym = diff(f_sym, x_sym)
+    df_symbolic = lambdify(x_sym, df_sym, 'numpy')
+    
+    start = time.time()
+    for _ in range(n_iterations):
+        _ = df_symbolic(x_array)
+    results['symbolic'] = (time.time() - start) * 1000 / n_iterations
+    
+    # Numerical (NumPy)
+    start = time.time()
+    for _ in range(n_iterations):
+        _ = np.gradient(f(x_array), x_array)
+    results['numerical'] = (time.time() - start) * 1000 / n_iterations
+    
+    # Automatic (JAX)
+    x_jax = jnp.array(x_array, dtype=jnp.float32)
+    start = time.time()
+    for _ in range(n_iterations):
+        _ = vmap(grad(f))(x_jax)
+    results['automatic'] = (time.time() - start) * 1000 / n_iterations
+    
+    return results
+
+# Run benchmark
+x = np.linspace(-5, 5, 10000)
+timings = benchmark_derivatives(f, x)
+
+for method, time_ms in timings.items():
+    print(f"{method.capitalize()}: {time_ms:.2f} ms")
+```
+
+## When to Use Each Method
+
+<AccordionGroup>
+  <Accordion title="Symbolic Differentiation">
+    **Use when:**
+    - You need exact analytical formulas
+    - Working with simple mathematical expressions
+    - Teaching or educational purposes
+    - Verifying other methods
+    
+    **Avoid when:**
+    - Functions are very complex
+    - Need high performance
+    - Working with large datasets
+  </Accordion>
+  
+  <Accordion title="Numerical Differentiation">
+    **Use when:**
+    - You have black-box functions
+    - Don't need high accuracy
+    - Prototyping quickly
+    - One-time calculations
+    
+    **Avoid when:**
+    - Need exact derivatives
+    - Functions have discontinuities
+    - Repeated evaluations required
+    - Performance is critical
+  </Accordion>
+  
+  <Accordion title="Automatic Differentiation">
+    **Use when:**
+    - Training neural networks
+    - Need both speed and accuracy
+    - Working with complex functions
+    - Gradient-based optimization
+    - Large-scale machine learning
+    
+    **Avoid when:**
+    - Simple one-off calculations
+    - Don't want to learn new syntax
+    - Need symbolic formulas for documentation
+  </Accordion>
+</AccordionGroup>
+
+## Key Takeaways
+
+- **Symbolic**: Exact but can be slow and complex
+- **Numerical**: Simple but approximate and inefficient for ML
+- **Automatic**: Best for machine learning - fast and exact
+- JAX is the modern standard for automatic differentiation
+- Choose the method based on your specific needs and constraints

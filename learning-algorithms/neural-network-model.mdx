@@ -1,0 +1,202 @@
+---
+title: Neural Network Model
+description: Understanding the mathematical model of neural network layers and how to build complex networks
+---
+
+## Introduction
+
+The fundamental building block of most modern neural networks is a **layer of neurons**. In this section, you'll learn how to construct a layer of neurons, and once you understand that, you can put these building blocks together to form large neural networks.
+
+## Neural Network Layer
+
+Let's examine the hidden layer from our demand prediction example:
+
+
+This hidden layer:
+- Inputs **four numbers** (the features)
+- Outputs **three numbers** (activation values)
+- Each of the three neurons implements a logistic regression function
+
+### Zooming Into the Hidden Layer
+
+
+The hidden layer inputs four numbers, and these are inputs to **each of the three neurons**.
+
+## Individual Neuron Computation
+
+### First Neuron
+
+The first neuron has parameters $w_1, b_1 and computes:
+
+```math
+a_1 = g(w_1 \\cdot x + b_1)
+```
+
+Where $g(z) = \frac{1}{1 + e^{-z}}$ is the sigmoid function.
+
+
+For example, this might output $a_1 = 0.3 (30% chance of affordability).
+
+### Second and Third Neurons
+
+Similarly:
+- **Second neuron**: $a_2 = g(w_2 \\cdot x + b_2), might output 0.7
+- **Third neuron**: $a_3 = g(w_3 \\cdot x + b_3), might output 0.2
+
+
+These three neurons output a vector: $[0.3, 0.7, 0.2]$, which becomes the activation vector $a passed to the output layer.
+
+## Layer Numbering Convention
+
+When building neural networks with multiple layers, we give them numbers:
+
+
+<Note>
+- **Layer 0** - Input layer (by convention)
+- **Layer 1** - First hidden layer
+- **Layer 2** - Second hidden layer (or output layer in this example)
+</Note>
+
+Today, neural networks can have dozens or even hundreds of layers!
+
+## Notation: Superscripts for Layers
+
+We use **superscript square brackets** to denote layers:
+
+- $a^{[1]} - Output of layer 1
+- $w_1^{[1]}, b_1^{[1]} - Parameters of the first neuron in layer 1
+- $w_2^{[1]}, b_2^{[1]} - Parameters of the second neuron in layer 1
+
+
+<Note>
+**Key notation rule**: Whenever you see superscript $[1]$, it refers to a quantity associated with layer 1. Superscript $[2]$ refers to layer 2, and so on.
+</Note>
+
+## Output Layer Computation
+
+Now let's examine layer 2 (the output layer):
+
+
+The input to layer 2 is $a^{[1]} = [0.3, 0.7, 0.2].
+
+Since the output layer has only one neuron:
+
+```math
+a_1^{[2]} = g(w_1^{[2]} \\cdot a^{[1]} + b_1^{[2]})
+```
+
+This might output 0.84, which is the final prediction of the neural network.
+
+### Making Binary Predictions
+
+To get a binary prediction (0 or 1):
+
+
+```python
+if a^[2] >= 0.5:
+    y_hat = 1
+else:
+    y_hat = 0
+```
+
+This is the same thresholding we used in logistic regression.
+
+## More Complex Neural Networks
+
+Let's examine a neural network with multiple hidden layers:
+
+
+This network has:
+- **Layer 0** - Input layer
+- **Layers 1, 2, 3** - Hidden layers
+- **Layer 4** - Output layer
+
+<Note>
+By convention, when we say a neural network has "four layers," we don't count the input layer.
+</Note>
+
+### Layer 3 Computation Example
+
+Let's zoom into Layer 3:
+
+
+Layer 3:
+- **Inputs**: $a^{[2]} (output from layer 2)
+- **Has 3 neurons** with parameters $w_1^{[3]}, b_1^{[3]}, $w_2^{[3]}, b_2^{[3]}, $w_3^{[3]}, b_3^{[3]}
+- **Outputs**: $a^{[3]} (a vector of 3 numbers)
+
+Each neuron computes:
+
+```math
+a_j^{[3]} = g(w_j^{[3]} \\cdot a^{[2]} + b_j^{[3]})
+```
+
+## Understanding Notation
+
+Let's test understanding with the second neuron in layer 3:
+
+
+The activation of the second neuron in layer 3 is:
+
+```math
+a_2^{[3]} = g(w_2^{[3]} \\cdot a^{[2]} + b_2^{[3]})
+```
+
+<Note>
+- Superscript $[3]$ indicates layer 3
+- Subscript $2$ indicates the second neuron
+- Input is $a^{[2]} (output from previous layer)
+</Note>
+
+## General Form
+
+For an arbitrary layer $l and neuron $j:
+
+```math
+a_j^{[l]} = g(w_j^{[l]} \\cdot a^{[l-1]} + b_j^{[l]})
+```
+
+Where:
+- $l is the layer number
+- $j is the neuron/unit number in that layer
+- $a^{[l-1]} is the output from the previous layer
+- $g is the **activation function**
+
+
+## Activation Functions
+
+<Note>
+The function $g is called the **activation function** because it outputs activation values. So far, we've only seen the sigmoid function, but next week you'll learn about other activation functions.
+</Note>
+
+## Input Layer Convention
+
+To make notation consistent, we denote the input vector $X as $a^{[0]}:
+
+
+This way, the same formula works for the first layer:
+
+```math
+a^{[1]} = g(w^{[1]} \\cdot a^{[0]} + b^{[1]})
+```
+
+Where $a^{[0]} = X (the input features).
+
+## Forward Propagation
+
+With this notation, you can compute the activation values of any layer as a function of:
+1. The parameters ($w, b)
+2. The activations of the previous layer
+
+This sequential computation from input to output is called **forward propagation**.
+
+## Summary
+
+Key concepts:
+
+1. **Layers** - Groups of neurons that process inputs together
+2. **Notation** - Superscripts $[l]$ for layers, subscripts for neuron numbers
+3. **Activation** - Output of a neuron, computed using parameters and inputs
+4. **Forward propagation** - Computing activations layer by layer from input to output
+
+Now you know how to compute activations for any layer in a neural network. This process of computing activations layer by layer to make predictions is called **forward propagation**.

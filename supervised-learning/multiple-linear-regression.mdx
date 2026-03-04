@@ -1,0 +1,228 @@
+---
+title: Multiple Linear Regression
+description: Learn how to extend linear regression to use multiple features for more powerful predictions.
+---
+
+## Introduction
+
+Welcome! In this section, you'll learn to make linear regression much more powerful by using not just one feature, but multiple features.
+
+## From One to Many Features
+
+In the original version of linear regression, you had a single feature x (the size of the house) and predicted y (the price):
+
+```math
+f_{w,b}(x) = w \cdot x + b
+```
+
+
+But what if you had not only the size, but also:
+- Number of bedrooms
+- Number of floors  
+- Age of the home in years
+
+This would give you much more information to predict the price!
+
+## Multiple Features
+
+Let's introduce some notation for working with multiple features:
+
+
+- **x₁, x₂, x₃, x₄**: The four features
+- **xⱼ**: The j-th feature (j goes from 1 to 4)
+- **n**: Total number of features (n = 4 in this example)
+
+### Notation for Training Examples
+
+
+- **x^(i)**: A vector containing all features of the i-th training example
+- **x^(i)_j**: The value of feature j in the i-th training example
+
+For example:
+```math
+x^{(2)} = [1416, 3, 2, 40]
+```
+
+This represents the second training example with:
+- 1,416 square feet
+- 3 bedrooms
+- 2 floors
+- 40 years old
+
+To refer to a specific feature:
+```math
+x^{(2)}_3 = 2
+```
+
+This is the number of floors in the second training example.
+
+## The Multiple Linear Regression Model
+
+With multiple features, the model becomes:
+
+```math
+f_{w,b}(x) = w_1 \cdot x_1 + w_2 \cdot x_2 + w_3 \cdot x_3 + w_4 \cdot x_4 + b
+```
+
+
+### Example: Housing Price Prediction
+
+A model might estimate price as:
+
+```math
+f(x) = 0.1 \cdot x_1 + 4 \cdot x_2 + 10 \cdot x_3 - 2 \cdot x_4 + 80
+```
+
+<Accordion title="Interpreting the parameters">
+  If predicting price in thousands of dollars:
+  
+  - **b = 80**: Base price of $80,000
+  - **w₁ = 0.1**: Price increases by $100 per square foot
+  - **w₂ = 4**: Price increases by $4,000 per bedroom
+  - **w₃ = 10**: Price increases by $10,000 per floor
+  - **w₄ = -2**: Price decreases by $2,000 per year of age
+</Accordion>
+
+### General Form
+
+For n features:
+
+```math
+f_{w,b}(x) = w_1 \cdot x_1 + w_2 \cdot x_2 + ... + w_n \cdot x_n + b
+```
+
+## Vector Notation
+
+To make this more compact, we use vector notation:
+
+
+Define:
+- **w**: A vector of weights [w₁, w₂, ..., wₙ]
+- **x**: A vector of features [x₁, x₂, ..., xₙ]
+
+The model can then be written as a **dot product**:
+
+```math
+f_{w,b}(x) = \vec{w} \cdot \vec{x} + b
+```
+
+
+The dot product **w · x** is calculated as:
+
+```math
+w_1 \cdot x_1 + w_2 \cdot x_2 + ... + w_n \cdot x_n
+```
+
+<Note>
+  This compact vector notation is why this is called **multiple linear regression** - it uses multiple input features.
+</Note>
+
+## Benefits of Multiple Features
+
+Using multiple features allows your model to:
+- Capture more complex relationships
+- Make more accurate predictions
+- Incorporate diverse types of information
+
+## Example: Complete Training Set
+
+Here's what a complete dataset might look like:
+
+| Size (ft²) | Bedrooms | Floors | Age (years) | Price ($1000s) |
+|------------|----------|--------|-------------|----------------|
+| 2104       | 5        | 1      | 45          | 460            |
+| 1416       | 3        | 2      | 40          | 232            |
+| 1534       | 3        | 2      | 30          | 315            |
+| 852        | 2        | 1      | 36          | 178            |
+
+Each row is a training example x^(i), and the model learns to predict the price y^(i).
+
+## Implementing Multiple Linear Regression
+
+The same principles apply as with single-variable linear regression:
+
+<Steps>
+  <Step title="Define the model">
+    Use the vector form: f(x) = w · x + b
+  </Step>
+  
+  <Step title="Define the cost function">
+    Measure how well the model fits the training data
+  </Step>
+  
+  <Step title="Use gradient descent">
+    Find the parameters w₁, w₂, ..., wₙ, and b that minimize the cost
+  </Step>
+</Steps>
+
+## Vectorization
+
+One powerful technique for implementing multiple linear regression efficiently is **vectorization** - using vector operations instead of loops.
+
+**Without vectorization (slow):**
+```python
+f = 0
+for j in range(n):
+    f += w[j] * x[j]
+f += b
+```
+
+**With vectorization (fast):**
+```python
+f = np.dot(w, x) + b
+```
+
+<Note>
+  Vectorization makes your code:
+  - Shorter and more readable
+  - Much faster, especially with large datasets
+  - Better suited for modern hardware (GPUs, parallel processing)
+</Note>
+
+## Cost Function for Multiple Linear Regression
+
+The cost function extends naturally to multiple features:
+
+```math
+J(w, b) = \frac{1}{2m} \sum_{i=1}^{m} (f_{w,b}(x^{(i)}) - y^{(i)})^2
+```
+
+Where:
+```math
+f_{w,b}(x^{(i)}) = \vec{w} \cdot \vec{x}^{(i)} + b
+```
+
+## Gradient Descent for Multiple Features
+
+The gradient descent update rules extend to multiple parameters:
+
+```math
+w_j = w_j - \alpha \frac{\partial}{\partial w_j} J(w, b)
+```
+
+For j = 1, 2, ..., n
+
+```math
+b = b - \alpha \frac{\partial}{\partial b} J(w, b)
+```
+
+<Warning>
+  Remember to update all parameters simultaneously! Compute all the new values first, then update them all at once.
+</Warning>
+
+## Summary
+
+Multiple linear regression:
+- Extends linear regression to use multiple input features
+- Uses vector notation for compact representation
+- Can be written as f(x) = w · x + b
+- Benefits from vectorization for efficient computation
+- Follows the same gradient descent principles as simple linear regression
+
+Next, you'll learn about:
+- Techniques to improve gradient descent performance
+- Feature scaling and normalization
+- Feature engineering
+- How to choose the learning rate
+
+These techniques will help you build more powerful and efficient models!

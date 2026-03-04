@@ -1,0 +1,309 @@
+---
+title: Clustering Algorithms
+description: Discover how clustering algorithms automatically group similar data points together and their real-world applications.
+---
+
+## What is Clustering?
+
+Clustering is a type of unsupervised learning algorithm that takes data without labels and tries to automatically group them into clusters based on similarity.
+
+<Info>
+A clustering algorithm analyzes unlabeled data and decides that certain data points belong together in groups or "clusters."
+</Info>
+
+### How Clustering Works
+
+Given unlabeled data points, a clustering algorithm:
+
+1. Analyzes the features and characteristics of each data point
+2. Identifies patterns and similarities between data points
+3. Groups similar data points into clusters
+4. Assigns each data point to a cluster
+
+<Note>
+The algorithm figures out the groupings automatically - you don't tell it in advance what the clusters should be or how many there should be.
+</Note>
+
+## Visual Example
+
+Consider patient data with tumor size and age (but no labels indicating benign or malignant):
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+# Sample patient data: [tumor_size, age]
+patient_data = np.array([
+    [2.5, 35], [3.0, 40], [2.8, 38],  # Potential cluster 1
+    [7.5, 55], [8.0, 60], [7.8, 58],  # Potential cluster 2
+    [2.0, 33], [3.2, 42], [8.2, 62]
+])
+
+# Apply K-Means clustering
+kmeans = KMeans(n_clusters=2, random_state=42)
+clusters = kmeans.fit_predict(patient_data)
+
+print(f"Cluster assignments: {clusters}")
+# Output: Cluster assignments: [0 0 0 1 1 1 0 0 1]
+```
+
+The algorithm automatically discovers two distinct groups in the data!
+
+## Real-World Applications
+
+### 1. Google News Article Grouping
+
+Google News processes hundreds of thousands of articles daily and groups related stories together.
+
+<Steps>
+  <Step title="Data Collection">
+    Google News collects hundreds of thousands of news articles from across the internet every day.
+  </Step>
+  
+  <Step title="Feature Analysis">
+    The clustering algorithm analyzes the words and content in each article.
+  </Step>
+  
+  <Step title="Automatic Grouping">
+    Articles mentioning similar words (like "panda," "twin," "zoo") are automatically grouped into the same cluster.
+  </Step>
+  
+  <Step title="Display Results">
+    Related articles are displayed together under a main headline.
+  </Step>
+</Steps>
+
+<Check>
+The algorithm figures out which words suggest articles belong together - no human tells it to look for specific keywords!
+</Check>
+
+**Example Cluster:**
+- Main article: "Giant panda gives birth to rare twin cubs at Japan's oldest zoo"
+- Related articles all mention: "panda," "twin," "zoo"
+
+### 2. DNA and Genetic Research
+
+Clustering helps researchers analyze DNA microarray data to understand genetic patterns.
+
+<Accordion title="Understanding DNA Microarrays">
+  DNA microarrays look like tiny grids where:
+  - Each **column** represents one person's genetic data
+  - Each **row** represents a specific gene (e.g., eye color, height, food preferences)
+  - Colors indicate how active each gene is for each person
+</Accordion>
+
+```python
+import numpy as np
+from sklearn.cluster import AgglomerativeClustering
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Simulated DNA microarray data
+# Rows = genes, Columns = individuals
+gene_expression = np.random.rand(100, 50)  # 100 genes, 50 people
+
+# Cluster individuals based on gene expression patterns
+clustering = AgglomerativeClustering(n_clusters=3)
+person_clusters = clustering.fit_predict(gene_expression.T)
+
+print(f"Person types found: {np.unique(person_clusters)}")
+print(f"Type 1: {np.sum(person_clusters == 0)} people")
+print(f"Type 2: {np.sum(person_clusters == 1)} people")
+print(f"Type 3: {np.sum(person_clusters == 2)} people")
+```
+
+<Warning>
+The algorithm discovers genetic "types" on its own - researchers don't define the types in advance.
+</Warning>
+
+### 3. Market Segmentation
+
+Companies use clustering to automatically group customers into market segments.
+
+<CardGroup cols={3}>
+  <Card title="Knowledge Seekers" icon="book">
+    Customers primarily motivated by growing their skills and learning
+  </Card>
+  <Card title="Career Developers" icon="briefcase">
+    Customers seeking promotions, new jobs, or career advancement
+  </Card>
+  <Card title="Industry Trackers" icon="chart-line">
+    Customers wanting to stay updated on industry trends and impacts
+  </Card>
+</CardGroup>
+
+```python
+from sklearn.cluster import KMeans
+import pandas as pd
+
+# Customer data: engagement metrics
+customer_data = pd.DataFrame({
+    'courses_taken': [5, 2, 8, 1, 6, 3, 7, 2],
+    'newsletter_opens': [80, 30, 90, 10, 75, 40, 85, 25],
+    'event_attendance': [3, 1, 5, 0, 4, 2, 4, 1],
+    'forum_posts': [20, 5, 40, 2, 25, 8, 35, 3]
+})
+
+# Apply clustering to find market segments
+kmeans = KMeans(n_clusters=3, random_state=42)
+customer_segments = kmeans.fit_predict(customer_data)
+
+customer_data['segment'] = customer_segments
+print(customer_data.groupby('segment').mean())
+```
+
+<Info>
+This helps companies tailor their services and communications to different customer groups more effectively.
+</Info>
+
+## Implementing a Basic Clustering Algorithm
+
+Let's implement a complete clustering example with visualization:
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
+# Generate sample data
+X, y_true = make_blobs(n_samples=300, centers=4, 
+                       cluster_std=0.60, random_state=0)
+
+# Apply K-Means clustering
+kmeans = KMeans(n_clusters=4)
+kmeans.fit(X)
+y_kmeans = kmeans.predict(X)
+
+# Visualize results
+plt.figure(figsize=(10, 6))
+plt.scatter(X[:, 0], X[:, 1], c=y_kmeans, 
+            s=50, cmap='viridis', alpha=0.6)
+
+# Plot cluster centers
+centers = kmeans.cluster_centers_
+plt.scatter(centers[:, 0], centers[:, 1], 
+            c='red', s=200, alpha=0.8, marker='X')
+plt.title('K-Means Clustering Results')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.show()
+
+print(f"Cluster centers:\n{centers}")
+```
+
+### Understanding the Code
+
+<CodeGroup>
+```python Data Generation
+# Create synthetic data with 4 natural clusters
+X, y_true = make_blobs(n_samples=300, centers=4, 
+                       cluster_std=0.60, random_state=0)
+# X: feature data points
+# y_true: actual cluster labels (not used by algorithm)
+```
+
+```python Clustering
+# Initialize and train the clustering algorithm
+kmeans = KMeans(n_clusters=4)
+kmeans.fit(X)  # Learn patterns from unlabeled data
+
+# Predict cluster assignments
+y_kmeans = kmeans.predict(X)
+```
+
+```python Results
+# Get cluster centers
+centers = kmeans.cluster_centers_
+
+# Each center represents the "average" point in that cluster
+print(f"Found {len(centers)} clusters")
+```
+</CodeGroup>
+
+## Key Concepts
+
+<AccordionGroup>
+  <Accordion title="Automatic Pattern Discovery">
+    Clustering algorithms discover patterns without being told what to look for. They analyze the data and determine groupings based on similarity.
+  </Accordion>
+  
+  <Accordion title="No Labels Required">
+    Unlike supervised learning, clustering doesn't need labeled training data. It works purely from the features of the data points themselves.
+  </Accordion>
+  
+  <Accordion title="Scalability">
+    Clustering can process massive datasets automatically - essential for applications like news aggregation with hundreds of thousands of articles daily.
+  </Accordion>
+</AccordionGroup>
+
+## Common Clustering Algorithms
+
+| Algorithm | Best For | Characteristics |
+|-----------|----------|----------------|
+| **K-Means** | Well-separated, spherical clusters | Fast, requires specifying number of clusters |
+| **DBSCAN** | Arbitrary-shaped clusters, noise detection | Finds dense regions, handles outliers |
+| **Hierarchical** | Creating dendrograms, nested clusters | Builds cluster hierarchy, no preset cluster count |
+| **Gaussian Mixture** | Overlapping clusters, probability-based | Soft clustering with probabilities |
+
+## When to Use Clustering
+
+<CheckGroup>
+  <Check>You have unlabeled data and want to discover natural groupings</Check>
+  <Check>You need to segment customers, products, or users automatically</Check>
+  <Check>You want to identify similar items for recommendation systems</Check>
+  <Check>You're organizing or categorizing large amounts of unstructured data</Check>
+  <Check>You need to preprocess data before applying other ML techniques</Check>
+</CheckGroup>
+
+## Key Takeaways
+
+<Card title="Core Principle" icon="lightbulb">
+  Clustering algorithms automatically group similar data points together without supervision or labeled examples.
+</Card>
+
+<Card title="Real-World Impact" icon="rocket">
+  From Google News to genetic research to customer segmentation, clustering enables automatic organization of massive, unlabeled datasets.
+</Card>
+
+<Card title="Flexibility" icon="wand-magic-sparkles">
+  The algorithm figures out patterns on its own - you don't need to define categories or provide training labels in advance.
+</Card>
+
+## Practice Exercise
+
+Try implementing clustering on your own dataset:
+
+```python
+from sklearn.cluster import KMeans
+import numpy as np
+
+# Your data here (replace with your own)
+data = np.array([
+    # Add your data points
+])
+
+# Experiment with different numbers of clusters
+for n_clusters in [2, 3, 4, 5]:
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    labels = kmeans.fit_predict(data)
+    print(f"With {n_clusters} clusters: {labels}")
+```
+
+<Tip>
+Start with 2-3 clusters and visualize the results. Gradually increase the number and see how the groupings change!
+</Tip>
+
+## Next Steps
+
+Now that you understand clustering, explore other unsupervised learning techniques:
+
+<CardGroup cols={2}>
+  <Card title="Anomaly Detection" icon="shield-halved">
+    Learn to identify unusual patterns and outliers in your data
+  </Card>
+  <Card title="Dimensionality Reduction" icon="minimize">
+    Discover how to compress high-dimensional data while preserving information
+  </Card>
+</CardGroup>

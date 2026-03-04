@@ -1,0 +1,135 @@
+---
+title: Neurons and the Brain
+description: Understanding the biological inspiration and evolution of neural networks and deep learning
+---
+
+## Introduction
+
+When neural networks were first invented many decades ago, the original motivation was to write software that could mimic how the human brain or biological brain learns and thinks.
+
+Even though today, neural networks (sometimes called **artificial neural networks**) have become very different from how we think about how the brain actually works and learns, some of the biological motivations still remain in the way we think about neural networks today.
+
+## How the Brain Works
+
+The human brain, or more generally the biological brain, demonstrates a higher level or more capable level of intelligence than anything we've built so far.
+
+Neural networks started with the motivation of trying to build software to mimic the brain:
+
+- **1950s** - Initial development of neural networks
+- **1980s-1990s** - Gained popularity with applications like handwritten digit recognition for postal codes and check processing
+- **Late 1990s** - Fell out of favor
+- **2005-present** - Re-emerged as "deep learning" and gained tremendous momentum
+
+<Note>
+The term "deep learning" proved to be excellent branding - it sounds much more impressive than "neural networks" because it emphasizes depth and learning.
+</Note>
+
+
+## Breakthroughs in Deep Learning
+
+Since 2005, neural networks have revolutionized application area after application area:
+
+<Steps>
+  <Step title="Speech Recognition">
+    The first major application area where modern neural networks had a huge impact. Researchers like Geoff Hinton were instrumental in this breakthrough.
+  </Step>
+  
+  <Step title="Computer Vision">
+    The **ImageNet moment in 2012** was a watershed event that captured people's imagination and had a massive impact on computer vision.
+  </Step>
+  
+  <Step title="Natural Language Processing">
+    Neural networks made significant inroads into text processing and NLP in the years following the computer vision breakthroughs.
+  </Step>
+  
+  <Step title="Widespread Applications">
+    Now used in climate change, medical imaging, online advertising, product recommendations, and countless other applications.
+  </Step>
+</Steps>
+
+## Biological Neurons vs Artificial Neurons
+
+Even though today's neural networks have almost nothing to do with how the brain learns, the early motivations tried to mimic the brain.
+
+### Structure of Biological Neurons
+
+Here's a diagram of neurons in a biological brain:
+
+
+All of human thought comes from neurons like these sending electrical impulses and forming connections with other neurons. A neuron:
+
+1. Receives inputs from multiple other neurons
+2. Aggregates these inputs
+3. Performs computations
+4. Sends outputs to other neurons via electrical impulses
+
+### Biological Neuron Components
+
+
+A biological neuron comprises:
+- **Cell body** (nucleus) - The core of the neuron
+- **Dendrites** - Input wires that receive signals
+- **Axon** - Output wire that sends electrical impulses to other neurons
+
+<Note>
+You don't need to memorize these biological terms to build artificial neural networks!
+</Note>
+
+### Artificial Neurons: Simplified Mathematical Models
+
+Artificial neural networks use a very simplified mathematical model of what a biological neuron does:
+
+1. Takes one or more inputs (numbers)
+2. Does some computation
+3. Outputs a result to the next neuron
+
+Instead of simulating just one neuron, we simulate many neurons together. This allows us to input numbers, perform computations, and generate outputs using a network of neurons.
+
+## Important Caveat
+
+<Warning>
+Even though neural networks were originally biologically motivated, **we have almost no idea how the human brain actually works**.
+</Warning>
+
+Every few years, neuroscientists make fundamental breakthroughs about how the brain works, suggesting that many more discoveries are yet to come. This means that attempts to blindly mimic what we know of the human brain today probably won't get us very far toward building true intelligence.
+
+However, even with these extremely simplified models of a neuron, we can build really powerful deep learning algorithms.
+
+## Why Neural Networks Took Off Recently
+
+A common question: **Why have neural networks only taken off in recent years?**
+
+### The Role of Big Data
+
+The answer lies in the availability of big data and computing power:
+
+
+On a plot of data amount (horizontal axis) vs. performance (vertical axis):
+
+- **Traditional algorithms** (linear regression, logistic regression) - Performance plateaus even with more data
+- **Small neural networks** - Better performance than traditional algorithms
+- **Medium neural networks** - Even better performance with more data
+- **Large neural networks** - Performance keeps improving with massive datasets
+
+<Note>
+For applications where you have lots of data ("big data"), training a very large neural network can achieve performance levels that were not possible with earlier generations of learning algorithms.
+</Note>
+
+### Hardware Advancements
+
+The rise of faster computer processors and **GPUs (Graphics Processing Units)** was also a major force:
+
+- GPUs were originally designed for computer graphics
+- Turned out to be extremely powerful for deep learning
+- Enable training of very large networks on large datasets
+
+## Key Takeaways
+
+1. Neural networks were inspired by the brain but are now very different from biological neural networks
+2. Deep learning has revolutionized multiple fields since 2005
+3. The combination of big data and powerful hardware (especially GPUs) enabled the deep learning revolution
+4. Large neural networks can achieve unprecedented performance on many tasks
+
+## Next Steps
+
+Now that you understand the history and motivation behind neural networks, let's dive deeper into [how neural networks actually work](/learning-algorithms/neural-network-intuition) with practical examples.

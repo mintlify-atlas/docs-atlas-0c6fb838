@@ -1,0 +1,320 @@
+---
+title: Neural Network Training
+description: Understanding how to train neural networks using gradient descent and backpropagation
+---
+
+## Introduction
+
+Now that you've learned how to carry out inference in a neural network, let's explore how to **train** a neural network. Being able to take your own data and train your own neural network is both powerful and exciting.
+
+## Training a Neural Network
+
+Let's continue with our handwritten digit recognition example (recognizing 0 vs 1).
+
+
+Our neural network:
+- **Input**: Image (64 pixel values)
+- **Hidden Layer 1**: 25 units with sigmoid activation
+- **Hidden Layer 2**: 15 units with sigmoid activation
+- **Output Layer**: 1 unit with sigmoid activation
+
+Given a training set of examples (images X with labels Y), how do we train the parameters?
+
+## TensorFlow Training Code
+
+Here's the complete code for training a neural network in TensorFlow:
+
+### Step 1: Define the Model
+
+```python
+import tensorflow as tf
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=25, activation='sigmoid'),
+    tf.keras.layers.Dense(units=15, activation='sigmoid'),
+    tf.keras.layers.Dense(units=1, activation='sigmoid')
+])
+```
+
+This should look familiar from the previous section!
+
+### Step 2: Compile the Model
+
+```python
+model.compile(
+    loss=tf.keras.losses.BinaryCrossentropy()
+)
+```
+
+<Note>
+The key step is specifying the **loss function**. For binary classification, we use **Binary Cross-Entropy**.
+</Note>
+
+### Step 3: Fit the Model
+
+```python
+model.fit(X, Y, epochs=100)
+```
+
+This tells TensorFlow to:
+1. Use the model structure from Step 1
+2. Use the loss function from Step 2  
+3. Train on data X and Y for 100 epochs
+
+
+## Training Process Details
+
+Let's understand what happens during training by comparing with logistic regression.
+
+### Recall: Training Logistic Regression
+
+<Steps>
+  <Step title="Specify the Model">
+    Define how to compute the output:
+    
+    ```math
+    f(x) = \\frac{1}{1 + e^{-(w \\cdot x + b)}}
+    ```
+  </Step>
+  
+  <Step title="Define Loss and Cost">
+    **Loss function** (single example):
+    
+    ```math
+    L(f(x), y) = -y \\log(f(x)) - (1-y) \\log(1-f(x))
+    ```
+    
+    **Cost function** (all examples):
+    
+    ```math
+    J(w,b) = \\frac{1}{m} \\sum_{i=1}^{m} L(f(x^{(i)}), y^{(i)})
+    ```
+  </Step>
+  
+  <Step title="Optimize with Gradient Descent">
+    Minimize cost J(w,b) by repeatedly updating:
+    
+    ```math
+    w = w - \\alpha \\frac{\\partial J}{\\partial w}
+    ```
+    
+    ```math
+    b = b - \\alpha \\frac{\\partial J}{\\partial b}
+    ```
+  </Step>
+</Steps>
+
+
+### Training a Neural Network
+
+The process is similar:
+
+<Steps>
+  <Step title="Specify the Model">
+    Define the neural network architecture:
+    - Number of layers
+    - Units per layer
+    - Activation functions
+    - How layers connect
+  </Step>
+  
+  <Step title="Define Loss and Cost">
+    Same as logistic regression:
+    
+    **Binary Cross-Entropy Loss**:
+    ```math
+    L(f(x), y) = -y \\log(f(x)) - (1-y) \\log(1-f(x))
+    ```
+    
+    **Cost Function**:
+    ```math
+    J(W,B) = \\frac{1}{m} \\sum_{i=1}^{m} L(f(x^{(i)}), y^{(i)})
+    ```
+  </Step>
+  
+  <Step title="Optimize with Gradient Descent">
+    Minimize J by updating all parameters:
+    ```math
+    w_j^{[l]} = w_j^{[l]} - \\alpha \\frac{\\partial J}{\\partial w_j^{[l]}}
+    ```
+    
+    ```math
+    b_j^{[l]} = b_j^{[l]} - \\alpha \\frac{\\partial J}{\\partial b_j^{[l]}}
+    ```
+  </Step>
+</Steps>
+
+
+## Key Differences from Logistic Regression
+
+### Model Complexity
+
+**Logistic Regression**:
+- Simple: Just $f(x) = g(w \\cdot x + b)
+- Parameters: w and b
+
+**Neural Network**:
+- Complex: Multiple layers with many parameters
+- Parameters: All $w_j^{[l]} and $b_j^{[l]} for every neuron in every layer
+
+### Loss Function
+
+<Note>
+Good news: The **loss function is identical** for both logistic regression and neural networks when doing binary classification!
+
+```math
+L(f(x), y) = -y \\log(f(x)) - (1-y) \\log(1-f(x))
+```
+</Note>
+
+### Gradient Computation
+
+The key challenge: Computing gradients $\frac{\partial J}{\partial w}$ for all parameters.
+
+**For logistic regression**: Relatively simple
+
+**For neural networks**: More complex, uses an algorithm called **backpropagation**
+
+<Note>
+TensorFlow automatically computes all these gradients using **backpropagation**. You don't need to implement it yourself!
+</Note>
+
+## Understanding the Cost Function
+
+The cost function $J(W, B) for a neural network:
+
+1. Takes all parameters as input (all weights and biases across all layers)
+2. Computes the average loss across all training examples
+3. Tells us how well the network is performing
+
+
+### Goal of Training
+
+Find parameters $W, B that minimize $J(W, B)
+
+## Gradient Descent in Neural Networks
+
+The gradient descent algorithm for neural networks:
+
+```
+Repeat until convergence:
+    For each layer l:
+        For each unit j in layer l:
+            w_j^[l] = w_j^[l] - α * ∂J/∂w_j^[l]
+            b_j^[l] = b_j^[l] - α * ∂J/∂b_j^[l]
+```
+
+Where:
+- $\alpha$ is the learning rate
+- $\frac{\partial J}{\partial w_j^{[l]}}$ is the gradient computed by backpropagation
+
+
+## What TensorFlow Does
+
+When you call `model.fit(X, Y, epochs=100)`:
+
+<Steps>
+  <Step title="Initialize Parameters">
+    Randomly initialize all weights and biases
+  </Step>
+  
+  <Step title="Forward Propagation">
+    Compute predictions for all training examples
+  </Step>
+  
+  <Step title="Compute Loss">
+    Calculate the cost function J(W, B)
+  </Step>
+  
+  <Step title="Backpropagation">
+    Compute all gradients ∂J/∂w and ∂J/∂b
+  </Step>
+  
+  <Step title="Update Parameters">
+    Apply gradient descent to update all parameters
+  </Step>
+  
+  <Step title="Repeat">
+    Go back to step 2 and repeat for the specified number of epochs
+  </Step>
+</Steps>
+
+## Complete Training Example
+
+Here's a complete example:
+
+```python
+import tensorflow as tf
+import numpy as np
+
+# Step 1: Prepare your data
+X_train = np.array([...])  # Training images
+Y_train = np.array([...])  # Training labels
+
+# Step 2: Build the model
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=25, activation='sigmoid'),
+    tf.keras.layers.Dense(units=15, activation='sigmoid'),
+    tf.keras.layers.Dense(units=1, activation='sigmoid')
+])
+
+# Step 3: Compile the model
+model.compile(
+    optimizer='adam',  # Optimization algorithm
+    loss=tf.keras.losses.BinaryCrossentropy(),
+    metrics=['accuracy']  # Track accuracy during training
+)
+
+# Step 4: Train the model
+history = model.fit(
+    X_train, Y_train,
+    epochs=100,
+    validation_split=0.2  # Use 20% for validation
+)
+
+# Step 5: Make predictions
+X_test = np.array([...])  # New data
+predictions = model.predict(X_test)
+```
+
+## Key Concepts
+
+<Note>
+**Loss vs Cost**:
+- **Loss**: Error on a single training example
+- **Cost**: Average loss across all training examples
+</Note>
+
+<Note>
+**Binary Cross-Entropy**: The standard loss function for binary classification problems. It penalizes predictions that are confident but wrong.
+</Note>
+
+<Note>
+**Gradient Descent**: An iterative optimization algorithm that finds the minimum of the cost function by following the negative gradient.
+</Note>
+
+<Note>
+**Backpropagation**: An efficient algorithm for computing gradients in neural networks. TensorFlow handles this automatically!
+</Note>
+
+## Training Tips
+
+1. **Start with fewer epochs** and increase if needed
+2. **Monitor both training and validation loss** to detect overfitting
+3. **Experiment with learning rates** if training is too slow or unstable
+4. **Use appropriate loss functions** (binary cross-entropy for binary classification)
+
+## Summary
+
+Training a neural network in TensorFlow involves:
+
+1. **Define architecture** using Sequential
+2. **Compile with loss function** (e.g., BinaryCrossentropy)
+3. **Fit to data** using gradient descent (automated by TensorFlow)
+4. **Make predictions** on new data
+
+TensorFlow handles the complex mathematics (backpropagation, gradient computation) automatically, allowing you to focus on architecture and problem-solving!
+
+## Next Steps
+
+Now that you understand training, let's explore [how neural networks are implemented efficiently using vectorization](/learning-algorithms/vectorization).

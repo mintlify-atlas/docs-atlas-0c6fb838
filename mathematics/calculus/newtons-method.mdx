@@ -1,0 +1,401 @@
+---
+title: Newton's Method for Optimization
+description: Learn Newton's method for finding minima of functions and compare it with gradient descent in terms of convergence speed and computational cost.
+---
+
+## Introduction
+
+Newton's method is a powerful optimization technique that uses second-order derivative information to find function minima. This guide explores how it works and compares it with gradient descent.
+
+## Setup
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
+```
+
+## Function in One Variable
+
+### The Algorithm
+
+Starting from initial point $x_0$, Newton's method updates using:
+
+$$
+x_1 = x_0 - \frac{f'(x_0)}{f''(x_0)}
+$$
+
+where:
+- $f'(x_0)$ is the first derivative (gradient)
+- $f''(x_0)$ is the second derivative (curvature)
+
+<Note>
+Newton's method uses curvature information to make smarter steps toward the minimum, often converging faster than gradient descent.
+</Note>
+
+### Example: $f(x) = e^x - \log(x)$
+
+Define the function and its derivatives:
+
+```python
+def f_example_1(x):
+    return np.exp(x) - np.log(x)
+
+def dfdx_example_1(x):
+    return np.exp(x) - 1/x
+
+def d2fdx2_example_1(x):
+    return np.exp(x) + 1/(x**2)
+
+x_0 = 1.6
+print(f"f({x_0}) = {f_example_1(x_0)}")
+print(f"f'({x_0}) = {dfdx_example_1(x_0)}")
+print(f"f''({x_0}) = {d2fdx2_example_1(x_0)}")
+```
+
+### Visualization
+
+```python
+def plot_f(x_range, y_range, f, ox_position):
+    x = np.linspace(*x_range, 100)
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+    
+    ax.set_ylim(*y_range)
+    ax.set_xlim(*x_range)
+    ax.set_ylabel('$f\,(x)$', fontsize=14)
+    ax.set_xlabel('$x$', fontsize=14)
+    ax.spines['left'].set_position('zero')
+    ax.spines['bottom'].set_position(('data', ox_position))
+    ax.spines['right'].set_color('none')
+    ax.spines['top'].set_color('none')
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+    ax.autoscale(enable=False)
+    
+    ax.plot(x, f(x), 'k', linewidth=2)
+    ax.set_title('Function with Global Minimum', fontsize=16)
+    ax.grid(True, alpha=0.3)
+    
+    return fig, ax
+
+plot_f([0.001, 2.5], [-0.3, 13], f_example_1, 0.0)
+plt.show()
+```
+
+### Implementation
+
+```python
+def newtons_method(dfdx, d2fdx2, x, num_iterations=100):
+    for iteration in range(num_iterations):
+        x = x - dfdx(x) / d2fdx2(x)
+    return x
+
+num_iterations = 25
+x_initial = 1.6
+
+result = newtons_method(dfdx_example_1, d2fdx2_example_1, 
+                        x_initial, num_iterations)
+print(f"Newton's method result: x_min = {result}")
+```
+
+<Tip>
+Newton's method often converges in just 6-8 iterations for smooth functions!
+</Tip>
+
+## Comparison with Gradient Descent
+
+### Gradient Descent Implementation
+
+```python
+def gradient_descent(dfdx, x, learning_rate=0.1, num_iterations=100):
+    for iteration in range(num_iterations):
+        x = x - learning_rate * dfdx(x)
+    return x
+
+num_iterations = 25
+learning_rate = 0.1
+x_initial = 1.6
+
+result_gd = gradient_descent(dfdx_example_1, x_initial, 
+                             learning_rate, num_iterations)
+print(f"Gradient descent result: x_min = {result_gd}")
+```
+
+### Convergence Comparison
+
+```python
+def compare_methods(f, dfdx, d2fdx2, x_initial, num_iterations=25):
+    # Newton's method
+    x_newton = [x_initial]
+    x = x_initial
+    for i in range(num_iterations):
+        x = x - dfdx(x) / d2fdx2(x)
+        x_newton.append(x)
+    
+    # Gradient descent
+    x_gd = [x_initial]
+    x = x_initial
+    learning_rate = 0.1
+    for i in range(num_iterations):
+        x = x - learning_rate * dfdx(x)
+        x_gd.append(x)
+    
+    # Plot comparison
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    
+    # Convergence plot
+    axes[0].plot([f(x) for x in x_newton], 'b-o', label="Newton's Method", linewidth=2)
+    axes[0].plot([f(x) for x in x_gd], 'r-s', label='Gradient Descent', linewidth=2)
+    axes[0].set_xlabel('Iteration', fontsize=12)
+    axes[0].set_ylabel('f(x)', fontsize=12)
+    axes[0].set_title('Convergence Comparison', fontsize=14)
+    axes[0].legend(fontsize=11)
+    axes[0].grid(True, alpha=0.3)
+    
+    # Parameter evolution
+    axes[1].plot(x_newton, 'b-o', label="Newton's Method", linewidth=2)
+    axes[1].plot(x_gd, 'r-s', label='Gradient Descent', linewidth=2)
+    axes[1].axhline(y=x_newton[-1], color='g', linestyle='--', label='Minimum', linewidth=1)
+    axes[1].set_xlabel('Iteration', fontsize=12)
+    axes[1].set_ylabel('x', fontsize=12)
+    axes[1].set_title('Parameter Evolution', fontsize=14)
+    axes[1].legend(fontsize=11)
+    axes[1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    print(f"Newton's method converged to: {x_newton[-1]:.6f} in {len(x_newton)-1} iterations")
+    print(f"Gradient descent converged to: {x_gd[-1]:.6f} in {len(x_gd)-1} iterations")
+
+compare_methods(f_example_1, dfdx_example_1, d2fdx2_example_1, x_initial=1.6)
+```
+
+## Functions in Two Variables
+
+Newton's method extends to multiple variables using the Hessian matrix.
+
+### The Algorithm
+
+For function $f(x, y)$, starting from $(x_0, y_0)$:
+
+$$
+\begin{bmatrix}x_1 \\ y_1\end{bmatrix} = \begin{bmatrix}x_0 \\ y_0\end{bmatrix} - 
+H^{-1}(x_0, y_0)\nabla f(x_0, y_0)
+$$
+
+where:
+- $\nabla f = \begin{bmatrix}\frac{\partial f}{\partial x} \\ \frac{\partial f}{\partial y}\end{bmatrix}$ is the gradient
+- $H = \begin{bmatrix}\frac{\partial^2 f}{\partial x^2} & \frac{\partial^2 f}{\partial x \partial y} \\ \frac{\partial^2 f}{\partial y \partial x} & \frac{\partial^2 f}{\partial y^2}\end{bmatrix}$ is the Hessian matrix
+
+### Example Function
+
+$$
+\begin{align}
+f(x, y) &= x^4 + 0.8 y^4 + 4x^2 + 2y^2 - xy - 0.2x^2y \\
+\nabla f(x, y) &= \begin{bmatrix}4x^3 + 8x - y - 0.4xy \\ 3.2y^3 + 4y - x - 0.2x^2\end{bmatrix} \\
+H(x, y) &= \begin{bmatrix}12x^2 + 8 - 0.4y & -1 - 0.4x \\ -1 - 0.4x & 9.6y^2 + 4\end{bmatrix}
+\end{align}
+$$
+
+### Implementation
+
+```python
+def f_example_2(x, y):
+    return x**4 + 0.8*y**4 + 4*x**2 + 2*y**2 - x*y - 0.2*x**2*y
+
+def grad_f_example_2(x, y):
+    return np.array([[4*x**3 + 8*x - y - 0.4*x*y],
+                     [3.2*y**3 + 4*y - x - 0.2*x**2]])
+
+def hessian_f_example_2(x, y):
+    return np.array([[12*x**2 + 8 - 0.4*y, -1 - 0.4*x],
+                     [-1 - 0.4*x, 9.6*y**2 + 4]])
+
+x_0, y_0 = 4, 4
+print(f"f({x_0}, {y_0}) = {f_example_2(x_0, y_0)}")
+print(f"\u2207f({x_0}, {y_0}) =\n{grad_f_example_2(x_0, y_0)}")
+print(f"\nH({x_0}, {y_0}) =\n{hessian_f_example_2(x_0, y_0)}")
+```
+
+### Visualization
+
+```python
+def plot_f_cont_and_surf(f):
+    fig = plt.figure(figsize=(14, 6))
+    fig.set_facecolor('#ffffff')
+    gs = GridSpec(1, 2, figure=fig)
+    axc = fig.add_subplot(gs[0, 0])
+    axs = fig.add_subplot(gs[0, 1], projection='3d')
+    
+    x_range = [-4, 5]
+    y_range = [-4, 5]
+    z_range = [0, 1200]
+    x = np.linspace(*x_range, 100)
+    y = np.linspace(*y_range, 100)
+    X, Y = np.meshgrid(x, y)
+    
+    # Contour plot
+    cont = axc.contour(X, Y, f(X, Y), cmap='terrain', levels=18, 
+                      linewidths=2, alpha=0.7)
+    axc.set_xlabel('$x$', fontsize=12)
+    axc.set_ylabel('$y$', fontsize=12)
+    axc.set_xlim(*x_range)
+    axc.set_ylim(*y_range)
+    axc.set_aspect("equal")
+    axc.set_title('Contour Plot', fontsize=14)
+    axc.grid(True, alpha=0.3)
+    
+    # Surface plot
+    surf = axs.plot_surface(X, Y, f(X, Y), cmap='terrain', 
+                           antialiased=True, cstride=1, rstride=1, alpha=0.69)
+    axs.set_xlabel('$x$', fontsize=12)
+    axs.set_ylabel('$y$', fontsize=12)
+    axs.set_zlabel('$f$', fontsize=12)
+    axs.set_xlim(*x_range)
+    axs.set_ylim(*y_range)
+    axs.set_zlim(*z_range)
+    axs.view_init(elev=20, azim=-100)
+    axs.set_title('3D Surface', fontsize=14)
+    
+    plt.tight_layout()
+    return fig, axc, axs
+
+plot_f_cont_and_surf(f_example_2)
+plt.show()
+```
+
+### Newton's Method in 2D
+
+```python
+def newtons_method_2(f, grad_f, hessian_f, x_y, num_iterations=100):
+    for iteration in range(num_iterations):
+        H_inv = np.linalg.inv(hessian_f(x_y[0,0], x_y[1,0]))
+        grad = grad_f(x_y[0,0], x_y[1,0])
+        x_y = x_y - np.matmul(H_inv, grad)
+    return x_y
+
+num_iterations = 25
+x_y_initial = np.array([[4], [4]])
+
+result = newtons_method_2(f_example_2, grad_f_example_2, 
+                         hessian_f_example_2, x_y_initial, num_iterations)
+print(f"Newton's method result: (x_min, y_min) = ({result[0,0]:.6f}, {result[1,0]:.6f})")
+```
+
+### Comparison with Gradient Descent (2D)
+
+```python
+def gradient_descent_2(grad_f, x_y, learning_rate=0.1, num_iterations=100):
+    for iteration in range(num_iterations):
+        x_y = x_y - learning_rate * grad_f(x_y[0,0], x_y[1,0])
+    return x_y
+
+num_iterations_2 = 300
+learning_rate_2 = 0.02
+x_y_initial = np.array([[4], [4]])
+
+result_gd = gradient_descent_2(grad_f_example_2, x_y_initial, 
+                               learning_rate_2, num_iterations_2)
+print(f"Gradient descent result: (x_min, y_min) = ({result_gd[0,0]:.6f}, {result_gd[1,0]:.6f})")
+print(f"\nNote: Newton's method converges in ~9 iterations")
+print(f"Gradient descent needs {num_iterations_2} iterations!")
+```
+
+## Advantages and Disadvantages
+
+<Tabs>
+  <Tab title="Newton's Method">
+    ### Advantages
+    ✅ **Faster convergence**: Quadratic convergence near the minimum  
+    ✅ **Fewer iterations**: Often 5-10x fewer than gradient descent  
+    ✅ **No learning rate**: Automatically determines step size  
+    ✅ **Better for well-behaved functions**: Exploits curvature information  
+    
+    ### Disadvantages
+    ❌ **Computationally expensive**: Must compute and invert Hessian  
+    ❌ **Impractical for high dimensions**: $n \times n$ Hessian matrix  
+    ❌ **Can fail**: Requires Hessian to be positive definite  
+    ❌ **Memory intensive**: Storing Hessian for large $n$  
+  </Tab>
+  
+  <Tab title="Gradient Descent">
+    ### Advantages
+    ✅ **Scalable**: Works with millions of parameters  
+    ✅ **Simple**: Only requires first derivatives  
+    ✅ **Memory efficient**: No need to store/invert matrices  
+    ✅ **Robust**: Works in most scenarios  
+    
+    ### Disadvantages
+    ❌ **Slower convergence**: Linear convergence rate  
+    ❌ **Requires tuning**: Learning rate must be chosen carefully  
+    ❌ **More iterations**: 10-100x more than Newton's method  
+    ❌ **Can oscillate**: Without proper learning rate  
+  </Tab>
+</Tabs>
+
+## When to Use Each Method
+
+<CardGroup cols={2}>
+  <Card title="Use Newton's Method" icon="rocket">
+    - Small to medium problems (< 1000 variables)
+    - Well-conditioned problems
+    - When function evaluations are cheap
+    - When you need high precision
+  </Card>
+  <Card title="Use Gradient Descent" icon="gauge">
+    - Large-scale problems (neural networks)
+    - When Hessian is too expensive
+    - Stochastic/mini-batch settings
+    - Most machine learning applications
+  </Card>
+</CardGroup>
+
+## Quasi-Newton Methods
+
+Best of both worlds: approximate the Hessian
+
+### Popular Methods
+
+1. **BFGS**: Builds Hessian approximation iteratively
+2. **L-BFGS**: Limited memory version for large-scale problems
+3. **DFP**: Davidon-Fletcher-Powell algorithm
+
+```python
+from scipy.optimize import minimize
+
+# Using L-BFGS-B (quasi-Newton method)
+def f_scalar(xy):
+    return f_example_2(xy[0], xy[1])
+
+def grad_scalar(xy):
+    grad = grad_f_example_2(xy[0], xy[1])
+    return np.array([grad[0,0], grad[1,0]])
+
+x0 = np.array([4.0, 4.0])
+result = minimize(f_scalar, x0, method='L-BFGS-B', jac=grad_scalar)
+
+print("L-BFGS-B result:", result.x)
+print("Iterations:", result.nit)
+print("Function evaluations:", result.nfev)
+```
+
+## Summary
+
+**Newton's Method**:
+- Uses second derivatives (Hessian) for faster convergence
+- Converges quadratically near minimum
+- Impractical for high-dimensional problems due to computational cost
+
+**Gradient Descent**:
+- Uses only first derivatives
+- Slower but scales to large problems
+- Foundation of deep learning optimization
+
+**Quasi-Newton Methods**:
+- Approximate Hessian for balance between speed and scalability
+- L-BFGS popular for medium-scale problems
+
+<Note>
+In modern machine learning, variants of gradient descent (Adam, RMSprop, AdaGrad) are most common due to their scalability and effectiveness with stochastic updates.
+</Note>

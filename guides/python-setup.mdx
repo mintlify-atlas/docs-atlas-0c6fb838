@@ -1,0 +1,239 @@
+---
+title: Python Environment Setup
+description: Complete guide to setting up your Python environment for machine learning with Mindect
+---
+
+## Introduction
+
+To work with Mindect's machine learning tutorials and notebooks, you'll need to set up a Python environment with the necessary tools and libraries. This guide will walk you through the complete setup process.
+
+## Installing Python
+
+<Steps>
+<Step>
+### Download Python
+
+Download the latest version of Python from [python.org](https://www.python.org/downloads/).
+
+- For Windows and macOS: Download the installer for your operating system
+- For Linux: Python is usually pre-installed, but you can update it using your package manager
+
+**Recommended version**: Python 3.8 or higher
+
+</Step>
+<Step>
+### Verify Installation
+
+After installation, verify that Python is correctly installed:
+
+```bash title="terminal"
+python --version
+```
+
+or
+
+```bash title="terminal"
+python3 --version
+```
+
+You should see output similar to:
+
+```
+Python 3.11.5
+```
+
+</Step>
+</Steps>
+
+## Installing PIP
+
+PIP (Python Package Installer) is essential for installing Python libraries.
+
+<Steps>
+<Step>
+### Check if PIP is installed
+
+PIP comes bundled with Python 3.4+. Verify it's installed:
+
+```bash title="terminal"
+pip --version
+```
+
+or
+
+```bash title="terminal"
+pip3 --version
+```
+
+</Step>
+<Step>
+### Install PIP (if needed)
+
+If PIP is not installed, download and install it:
+
+```bash title="terminal"
+python -m ensurepip --upgrade
+```
+
+</Step>
+</Steps>
+
+## Setting Up a Virtual Environment
+
+Virtual environments help you manage dependencies and avoid conflicts between projects.
+
+<Steps>
+<Step>
+### Create a Virtual Environment
+
+Navigate to your project directory and create a virtual environment:
+
+```bash title="terminal"
+python -m venv mindect-env
+```
+
+</Step>
+<Step>
+### Activate the Virtual Environment
+
+**On Windows:**
+
+```bash title="terminal"
+mindect-env\Scripts\activate
+```
+
+**On macOS/Linux:**
+
+```bash title="terminal"
+source mindect-env/bin/activate
+```
+
+You should see `(mindect-env)` at the beginning of your terminal prompt.
+
+</Step>
+</Steps>
+
+## Installing Essential Libraries
+
+Install the core libraries needed for machine learning:
+
+<Steps>
+<Step>
+### Install Jupyter Notebook
+
+```bash title="terminal"
+pip install notebook
+```
+
+</Step>
+<Step>
+### Install NumPy
+
+NumPy is essential for numerical computations:
+
+```bash title="terminal"
+pip install numpy
+```
+
+</Step>
+<Step>
+### Install Additional ML Libraries
+
+Install commonly used machine learning libraries:
+
+```bash title="terminal"
+pip install matplotlib pandas scikit-learn
+```
+
+- **matplotlib**: For data visualization
+- **pandas**: For data manipulation and analysis
+- **scikit-learn**: For machine learning algorithms
+
+</Step>
+</Steps>
+
+## Verifying Your Setup
+
+Test that everything is working correctly:
+
+<Steps>
+<Step>
+### Start Jupyter Notebook
+
+```bash title="terminal"
+jupyter notebook
+```
+
+</Step>
+<Step>
+### Test Python Libraries
+
+Create a new notebook and run the following code:
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+print("NumPy version:", np.__version__)
+print("Pandas version:", pd.__version__)
+print("Setup successful!")
+```
+
+If no errors appear, your environment is ready!
+
+</Step>
+</Steps>
+
+## Troubleshooting
+
+### Module not found errors
+
+If you get "ModuleNotFoundError", ensure:
+- Your virtual environment is activated
+- The package is installed in the correct environment
+
+```bash title="terminal"
+pip list  # Check installed packages
+```
+
+### Permission denied errors
+
+On Linux/macOS, if you encounter permission issues:
+
+```bash title="terminal"
+pip install --user <package-name>
+```
+
+### Upgrading PIP
+
+If you encounter outdated PIP warnings:
+
+```bash title="terminal"
+pip install --upgrade pip
+```
+
+### Virtual environment not activating
+
+**Windows PowerShell**: You may need to enable script execution:
+
+```bash title="terminal"
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+## Best Practices
+
+<Callout type="tip">
+- Always use virtual environments to isolate project dependencies
+- Keep your packages updated regularly
+- Use `requirements.txt` to track project dependencies
+- Deactivate virtual environments when done: `deactivate`
+</Callout>
+
+## Next Steps
+
+With your Python environment set up, you can:
+- Install and use Jupyter Notebook (see our [Jupyter Notebook guide](/guides/jupyter-notebook))
+- Download Mindect's learning modules
+- Start exploring machine learning algorithms
+- Build your own ML projects

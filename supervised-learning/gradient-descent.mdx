@@ -1,0 +1,184 @@
+---
+title: Gradient Descent
+description: Gradient descent is one of the most important algorithms in machine learning, used to minimize cost functions and train models including neural networks.
+---
+
+## Introduction
+
+Gradient descent is used all over the place in machine learning, not just for linear regression, but for training advanced neural network models (also called deep learning models). Learning gradient descent will set you up with one of the most important building blocks in machine learning.
+
+## The Problem
+
+Previously, you saw visualizations of the cost function J and how different choices of parameters w and b give different cost values. It would be nice to have a **systematic way** to find the values of w and b that result in the smallest possible cost J(w, b).
+
+<Note>
+  Gradient descent is an algorithm that you can use to minimize any function, not just the cost function for linear regression.
+</Note>
+
+## Overview
+
+The gradient descent algorithm works with a cost function J(w, b) that you want to minimize.
+
+
+For linear regression, this is the squared error cost function. However, gradient descent applies to more general functions, including cost functions with more than two parameters.
+
+For instance, if you have:
+```math
+J(w_1, w_2, ..., w_n, b)
+```
+
+Your objective is to minimize J over parameters w₁ to wₙ and b.
+
+
+### The Algorithm
+
+<Steps>
+  <Step title="Initialize parameters">
+    Start with initial guesses for w and b. For linear regression, a common choice is to set them both to 0.
+  </Step>
+  
+  <Step title="Update parameters">
+    Keep changing w and b a bit every time to try to reduce the cost J(w, b).
+  </Step>
+  
+  <Step title="Converge to minimum">
+    Continue until J settles at or near a minimum.
+  </Step>
+</Steps>
+
+
+## Visualizing Gradient Descent
+
+Let's look at a more complex surface plot to understand what gradient descent is doing.
+
+
+<Warning>
+  This function is NOT a squared error cost function. For linear regression with squared error, you always get a bowl/hammock shape. This is a type of cost function you might get when training a neural network.
+</Warning>
+
+### The Hill Analogy
+
+Imagine you're physically standing at a point on a hilly park or golf course:
+
+
+<Steps>
+  <Step title="Look around 360 degrees">
+    Your goal is to get to the bottom of a valley as efficiently as possible.
+  </Step>
+  
+  <Step title="Choose direction">
+    Ask yourself: "If I take a tiny baby step, which direction takes me downhill fastest?"
+  </Step>
+  
+  <Step title="Take a step">
+    Move in the direction of **steepest descent**.
+  </Step>
+  
+  <Step title="Repeat">
+    From your new position, repeat the process.
+  </Step>
+</Steps>
+
+
+Mathematically, the direction of steepest descent is determined by the derivative of the cost function. When you take a tiny step in this direction, you move downhill faster than in any other direction.
+
+
+You repeat this process until you reach the bottom of a valley - a **local minimum**.
+
+
+## Local Minima
+
+Gradient descent has an interesting property: **the starting point matters**.
+
+
+If you start at a different location (by choosing different initial values for w and b), you might end up in a completely different valley.
+
+
+The bottoms of valleys are called **local minima**:
+
+
+<Note>
+  If you start going down one valley, gradient descent won't lead you to a different valley. You'll stay in that valley until you reach its local minimum.
+</Note>
+
+## Implementing Gradient Descent
+
+The gradient descent algorithm uses this update rule:
+
+```math
+w = w - \alpha \frac{\partial}{\partial w} J(w, b)
+```
+
+```math
+b = b - \alpha \frac{\partial}{\partial b} J(w, b)
+```
+
+Where:
+- **α (alpha)**: The learning rate (controls step size)
+- **∂J/∂w**: The derivative of J with respect to w (indicates direction)
+
+
+### The Learning Rate
+
+The **learning rate α** is typically a small positive number between 0 and 1 (e.g., 0.01).
+
+
+- **Large α**: Aggressive, large steps downhill
+- **Small α**: Cautious, small baby steps downhill
+
+Choosing an appropriate learning rate is important for proper convergence.
+
+### The Derivative Term
+
+The **derivative** tells you:
+1. Which direction to adjust your parameters
+2. How much to adjust them (combined with α)
+
+
+<Note>
+  Don't worry if you're not familiar with calculus. You'll learn everything you need to know about derivatives in this course without requiring advanced calculus knowledge.
+</Note>
+
+### Simultaneous Updates
+
+An important detail: you must **simultaneously update** both w and b.
+
+**Correct implementation:**
+
+```python
+temp_w = w - alpha * (derivative of J with respect to w)
+temp_b = b - alpha * (derivative of J with respect to b)
+w = temp_w
+b = temp_b
+```
+
+
+**Incorrect implementation:**
+
+```python
+temp_w = w - alpha * (derivative of J with respect to w)
+w = temp_w  # w is updated before computing temp_b
+temp_b = b - alpha * (derivative of J with respect to b)
+b = temp_b
+```
+
+
+<Warning>
+  In the incorrect version, the updated w is used when calculating the derivative for b, which is not the standard gradient descent algorithm. Always use simultaneous updates.
+</Warning>
+
+## Summary
+
+Gradient descent is a powerful algorithm that:
+- Minimizes cost functions systematically
+- Works by taking steps in the direction of steepest descent
+- Requires choosing a learning rate α
+- Uses derivatives to determine direction and step size
+- Must update all parameters simultaneously
+
+Next, you'll learn more about:
+- How to compute the derivative terms
+- How to apply gradient descent to linear regression
+- How to choose appropriate learning rates
+
+This fundamental algorithm will be your foundation for more advanced machine learning techniques, including neural networks!

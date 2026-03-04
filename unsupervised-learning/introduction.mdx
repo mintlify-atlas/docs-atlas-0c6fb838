@@ -1,0 +1,128 @@
+---
+title: Introduction to Unsupervised Learning
+description: Learn about unsupervised learning, where algorithms find patterns and structure in unlabeled data without explicit supervision.
+---
+
+## What is Unsupervised Learning
+
+After supervised learning, the most widely used form of machine learning is **unsupervised learning**. Unlike supervised learning, where each example is associated with an output label (like benign or malignant), unsupervised learning works with data that has no labels.
+
+<AccordionGroup>
+  <Accordion title="Key Difference from Supervised Learning">
+    In supervised learning, you have data points with labels (like tumor classification with benign/malignant labels). In unsupervised learning, you only have the data points themselves - no labels attached.
+  </Accordion>
+</AccordionGroup>
+
+### Understanding Unlabeled Data
+
+Imagine you're given data on patients including tumor size and age, but **not** whether the tumor was benign or malignant. Your job isn't to diagnose - instead, it's to **find some structure, pattern, or something interesting in the data**.
+
+<Note>
+This is called "unsupervised" because we're not supervising the algorithm to give specific answers. Instead, the algorithm figures out patterns on its own.
+</Note>
+
+## Types of Unsupervised Learning
+
+Unsupervised learning encompasses several powerful techniques:
+
+<CardGroup cols={3}>
+  <Card title="Clustering" icon="layer-group">
+    Groups similar data points together into clusters
+  </Card>
+  <Card title="Anomaly Detection" icon="triangle-exclamation">
+    Detects unusual events or outliers in data
+  </Card>
+  <Card title="Dimensionality Reduction" icon="compress">
+    Compresses large datasets while preserving information
+  </Card>
+</CardGroup>
+
+### Clustering
+
+Clustering algorithms take unlabeled data and automatically group them into clusters based on similarity. This is one of the most common types of unsupervised learning.
+
+**Example:** Given patient data with tumor size and age, a clustering algorithm might discover that the data naturally forms two distinct groups, even without knowing which tumors are benign or malignant.
+
+### Anomaly Detection
+
+Anomaly detection identifies unusual events or patterns that don't conform to expected behavior.
+
+<Warning>
+This is critical for fraud detection in financial systems, where unusual transactions could indicate fraudulent activity.
+</Warning>
+
+**Key Applications:**
+- Fraud detection in banking
+- Network intrusion detection
+- Manufacturing defect detection
+- System health monitoring
+
+### Dimensionality Reduction
+
+Dimensionality reduction techniques compress large datasets into smaller ones while losing as little information as possible.
+
+<Info>
+This "magical" compression allows you to work with simplified data that retains the most important patterns from the original dataset.
+</Info>
+
+## Real-World Applications
+
+<AccordionGroup>
+  <Accordion title="News Aggregation">
+    Google News uses clustering to group related articles together. The algorithm automatically finds articles mentioning similar words (like "panda," "twin," "zoo") and groups them, without human supervision telling it which topics to look for.
+  </Accordion>
+  
+  <Accordion title="Market Segmentation">
+    Companies use clustering to automatically group customers into different segments, enabling more efficient and targeted service. For example, clustering might reveal groups motivated by: knowledge growth, career development, or staying updated on industry trends.
+  </Accordion>
+  
+  <Accordion title="Genetic Research">
+    DNA microarray data can be clustered to group individuals into different genetic types based on gene expression patterns, helping researchers understand genetic variations across populations.
+  </Accordion>
+</AccordionGroup>
+
+## Supervised vs. Unsupervised Learning
+
+<CodeGroup>
+```python Supervised Learning
+# Data comes with input features (X) AND labels (y)
+X = [[tumor_size, age], [tumor_size, age], ...]  # Features
+y = ["benign", "malignant", "benign", ...]        # Labels
+
+# Algorithm learns to predict labels for new data
+model.fit(X, y)
+prediction = model.predict(new_data)
+```
+
+```python Unsupervised Learning
+# Data comes ONLY with input features (X), no labels
+X = [[tumor_size, age], [tumor_size, age], ...]  # Features only
+# No labels (y) provided!
+
+# Algorithm finds patterns and structure on its own
+model.fit(X)
+clusters = model.predict(new_data)
+```
+</CodeGroup>
+
+## Key Takeaways
+
+<Check>
+**Unsupervised learning** works with unlabeled data, finding patterns and structure without explicit guidance on what to look for.
+</Check>
+
+<Check>
+The main types include **clustering** (grouping similar items), **anomaly detection** (finding outliers), and **dimensionality reduction** (compressing data).
+</Check>
+
+<Check>
+Applications range from news aggregation and customer segmentation to genetic research and fraud detection.
+</Check>
+
+## Next Steps
+
+Ready to dive deeper into clustering algorithms? Continue to the next section to learn how clustering works with practical examples.
+
+<Card title="Clustering Algorithms" icon="layer-group" href="./clustering">
+  Learn how clustering algorithms group data and explore real-world applications
+</Card>

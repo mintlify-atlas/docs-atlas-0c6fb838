@@ -1,0 +1,380 @@
+---
+title: Naive Bayes Classification
+description: Learn how to build probabilistic classifiers using Bayes' theorem and understand the "naive" independence assumption.
+---
+
+## Introduction
+
+Naive Bayes is a family of probabilistic classifiers based on Bayes' theorem with a "naive" assumption of independence between features. Despite this simplification, it works surprisingly well for many real-world applications.
+
+## Bayes' Theorem
+
+The foundation of Naive Bayes is Bayes' theorem:
+
+$$P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}$$
+
+For classification:
+
+$$P(\text{class}|\text{features}) = \frac{P(\text{features}|\text{class}) \cdot P(\text{class})}{P(\text{features})}$$
+
+Where:
+- $P(\text{class}|\text{features})$ = **Posterior**: probability of class given features
+- $P(\text{features}|\text{class})$ = **Likelihood**: probability of features given class
+- $P(\text{class})$ = **Prior**: probability of class (before seeing features)
+- $P(\text{features})$ = **Evidence**: probability of features (normalization constant)
+
+## The "Naive" Assumption
+
+<Note>
+**Naive Assumption**: All features are conditionally independent given the class.
+</Note>
+
+For features $x_1, x_2, \ldots, x_n$:
+
+$$P(x_1, x_2, \ldots, x_n | \text{class}) = P(x_1|\text{class}) \cdot P(x_2|\text{class}) \cdots P(x_n|\text{class})$$
+
+This simplifies computation dramatically, even though features are rarely truly independent in practice!
+
+## Example: Email Spam Classification
+
+### Problem Setup
+
+Classify emails as spam or not spam based on word occurrence.
+
+```python
+import numpy as np
+import pandas as pd
+from collections import defaultdict
+import matplotlib.pyplot as plt
+```
+
+### Training Data
+
+```python
+# Sample emails (simplified)
+training_data = [
+    ("buy cheap viagra now", "spam"),
+    ("claim your prize money", "spam"),
+    ("meeting tomorrow at 3pm", "not_spam"),
+    ("project deadline reminder", "not_spam"),
+    ("free money click here", "spam"),
+    ("lunch with team today", "not_spam"),
+    ("get rich quick scheme", "spam"),
+    ("code review scheduled", "not_spam"),
+]
+
+print("Training examples:")
+for email, label in training_data:
+    print(f"{label:10} | {email}")
+```
+
+### Naive Bayes Classifier Implementation
+
+```python
+class NaiveBayesClassifier:
+    def __init__(self):
+        self.class_word_counts = defaultdict(lambda: defaultdict(int))
+        self.class_counts = defaultdict(int)
+        self.vocabulary = set()
+    
+    def train(self, training_data):
+        """Train the classifier on labeled data."""
+        for text, label in training_data:
+            self.class_counts[label] += 1
+            words = text.lower().split()
+            
+            for word in words:
+                self.vocabulary.add(word)
+                self.class_word_counts[label][word] += 1
+    
+    def predict(self, text):
+        """Predict the class for new text."""
+        words = text.lower().split()
+        
+        # Calculate posterior for each class
+        posteriors = {}
+        
+        for label in self.class_counts:
+            # Prior: P(class)
+            prior = self.class_counts[label] / sum(self.class_counts.values())
+            
+            # Likelihood: P(words | class)
+            likelihood = 1.0
+            
+            for word in words:
+                # Count of this word in this class + 1 (Laplace smoothing)
+                word_count = self.class_word_counts[label][word] + 1
+                
+                # Total words in this class + vocabulary size
+                total_words = sum(self.class_word_counts[label].values()) + len(self.vocabulary)
+                
+                # P(word | class) with Laplace smoothing
+                word_prob = word_count / total_words
+                
+                likelihood *= word_prob
+            
+            # Posterior: P(class | words) ∝ P(words | class) × P(class)
+            posteriors[label] = likelihood * prior
+        
+        # Return class with highest posterior
+        return max(posteriors, key=posteriors.get), posteriors
+
+# Train the classifier
+classifier = NaiveBayesClassifier()
+classifier.train(training_data)
+
+print("\nVocabulary size:", len(classifier.vocabulary))
+print("Class counts:", dict(classifier.class_counts))
+```
+
+### Making Predictions
+
+```python
+# Test emails
+test_emails = [
+    "free money now",
+    "meeting at 3pm tomorrow",
+    "buy cheap products click here",
+    "code review feedback",
+]
+
+print("\nPredictions:")
+print("="*70)
+
+for email in test_emails:
+    prediction, posteriors = classifier.predict(email)
+    
+    print(f"\nEmail: '{email}'")
+    print(f"Predicted class: {prediction}")
+    print("Posterior probabilities:")
+    
+    # Normalize posteriors to probabilities
+    total = sum(posteriors.values())
+    for label, posterior in posteriors.items():
+        prob = posterior / total
+        print(f"  P({label} | email) = {prob:.4f}")
+```
+
+## Understanding the Math
+
+### Step-by-Step Example
+
+Let's classify "free money now" manually:
+
+```python
+email = "free money now"
+words = email.split()
+
+print(f"Classifying: '{email}'")
+print(f"Words: {words}\n")
+
+# Calculate for spam class
+print("For SPAM class:")
+print(f"Prior P(spam) = {classifier.class_counts['spam']} / {sum(classifier.class_counts.values())}")
+print(f"            = {classifier.class_counts['spam'] / sum(classifier.class_counts.values()):.3f}\n")
+
+print("Likelihoods:")
+for word in words:
+    count = classifier.class_word_counts['spam'][word] + 1
+    total = sum(classifier.class_word_counts['spam'].values()) + len(classifier.vocabulary)
+    prob = count / total
+    print(f"  P('{word}' | spam) = ({count}) / ({total}) = {prob:.4f}")
+
+print("\nFor NOT_SPAM class:")
+print(f"Prior P(not_spam) = {classifier.class_counts['not_spam']} / {sum(classifier.class_counts.values())}")
+print(f"                 = {classifier.class_counts['not_spam'] / sum(classifier.class_counts.values()):.3f}\n")
+
+print("Likelihoods:")
+for word in words:
+    count = classifier.class_word_counts['not_spam'][word] + 1
+    total = sum(classifier.class_word_counts['not_spam'].values()) + len(classifier.vocabulary)
+    prob = count / total
+    print(f"  P('{word}' | not_spam) = ({count}) / ({total}) = {prob:.4f}")
+```
+
+## Laplace Smoothing
+
+<Note>
+**Problem**: What if a word appears in test data but never in training data?
+
+**Solution**: Laplace smoothing adds 1 to all word counts.
+</Note>
+
+Without smoothing:
+$$P(\text{word}|\text{class}) = \frac{\text{count(word, class)}}{\text{total words in class}}$$
+
+With Laplace smoothing:
+$$P(\text{word}|\text{class}) = \frac{\text{count(word, class)} + 1}{\text{total words in class} + |V|}$$
+
+where $|V|$ is vocabulary size.
+
+```python
+# Example: unknown word
+unknown_word = "cryptocurrency"
+
+print(f"Word '{unknown_word}' not in training data\n")
+
+for label in classifier.class_counts:
+    # With Laplace smoothing
+    count = classifier.class_word_counts[label][unknown_word] + 1  # 0 + 1 = 1
+    total = sum(classifier.class_word_counts[label].values()) + len(classifier.vocabulary)
+    prob = count / total
+    
+    print(f"P('{unknown_word}' | {label}) = {prob:.6f} (with smoothing)")
+    print(f"Without smoothing it would be 0/total = 0 (breaks multiplication!)\n")
+```
+
+## Advantages and Disadvantages
+
+<Tabs>
+  <Tab title="Advantages">
+    ✅ **Simple and fast**: Easy to implement and train
+    
+    ✅ **Works with small data**: Performs well even with limited training examples
+    
+    ✅ **Scales well**: Linear time complexity in number of features
+    
+    ✅ **Handles high dimensions**: Works well with many features (e.g., text)
+    
+    ✅ **Probabilistic output**: Provides probability estimates, not just classifications
+    
+    ✅ **No hyperparameters**: Little tuning required
+  </Tab>
+  
+  <Tab title="Disadvantages">
+    ❌ **Independence assumption**: Rarely true in practice (features often correlated)
+    
+    ❌ **Zero probability problem**: Needs smoothing to handle unseen features
+    
+    ❌ **Poor probability estimates**: Works for classification but probabilities can be extreme
+    
+    ❌ **Sensitive to feature distribution**: Assumes specific distributions (Gaussian, multinomial, etc.)
+    
+    ❌ **Cannot learn interactions**: Assumes features don't interact
+  </Tab>
+</Tabs>
+
+## Types of Naive Bayes
+
+<CardGroup cols={2}>
+  <Card title="Gaussian Naive Bayes" icon="chart-bell-curve">
+    For continuous features that follow normal distribution
+    
+    $$P(x_i|class) = \frac{1}{\sqrt{2\pi\sigma^2}} e^{-\frac{(x_i-\mu)^2}{2\sigma^2}}$$
+  </Card>
+  
+  <Card title="Multinomial Naive Bayes" icon="list">
+    For discrete features (e.g., word counts)
+    
+    Most common for text classification
+  </Card>
+  
+  <Card title="Bernoulli Naive Bayes" icon="toggle-on">
+    For binary features (feature present/absent)
+    
+    Used for document classification
+  </Card>
+  
+  <Card title="Categorical Naive Bayes" icon="tags">
+    For categorical features
+    
+    Each feature can take multiple discrete values
+  </Card>
+</CardGroup>
+
+## Using scikit-learn
+
+Scikit-learn provides optimized implementations:
+
+```python
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import train_test_split
+
+# Prepare data
+texts = [text for text, _ in training_data]
+labels = [label for _, label in training_data]
+
+# Convert text to numerical features
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(texts)
+
+# Encode labels
+from sklearn.preprocessing import LabelEncoder
+le = LabelEncoder()
+y = le.fit_transform(labels)
+
+# Train model
+model = MultinomialNB(alpha=1.0)  # alpha is Laplace smoothing parameter
+model.fit(X, y)
+
+# Predict
+test_texts = ["free money now", "meeting tomorrow"]
+X_test = vectorizer.transform(test_texts)
+predictions = model.predict(X_test)
+proba = model.predict_proba(X_test)
+
+for text, pred, prob in zip(test_texts, predictions, proba):
+    print(f"\nText: '{text}'")
+    print(f"Prediction: {le.inverse_transform([pred])[0]}")
+    print(f"Probabilities: {dict(zip(le.classes_, prob))}")
+```
+
+## Real-World Applications
+
+- **Spam filtering**: Email classification
+- **Sentiment analysis**: Positive/negative review classification
+- **Document categorization**: News article classification
+- **Medical diagnosis**: Disease prediction from symptoms
+- **Recommendation systems**: Content-based filtering
+- **Customer segmentation**: User classification
+
+## Performance Tips
+
+<Steps>
+  <Step title="Feature Engineering">
+    Choose relevant features. Remove stop words and use TF-IDF for text.
+  </Step>
+  
+  <Step title="Handle Imbalanced Data">
+    Use class weights or resampling if classes are imbalanced.
+  </Step>
+  
+  <Step title="Tune Smoothing">
+    Adjust Laplace smoothing parameter (alpha) using cross-validation.
+  </Step>
+  
+  <Step title="Feature Selection">
+    Remove correlated or irrelevant features to reduce noise.
+  </Step>
+  
+  <Step title="Combine with Other Methods">
+    Use as baseline or ensemble with other classifiers.
+  </Step>
+</Steps>
+
+## When to Use Naive Bayes
+
+**Use when:**
+- You have limited training data
+- Features are relatively independent
+- You need fast training and prediction
+- Interpretability is important
+- Working with text classification
+- Need probabilistic outputs
+
+**Avoid when:**
+- Features are highly correlated
+- You have very complex decision boundaries
+- You have abundant training data (deep learning might be better)
+- Precise probability estimates are critical
+
+## Summary
+
+- Naive Bayes applies Bayes' theorem with independence assumption
+- "Naive" assumption simplifies computation but rarely holds in practice
+- Despite simplification, works surprisingly well for many problems
+- Laplace smoothing prevents zero probabilities
+- Fast, simple, and effective for text classification
+- Different variants for different feature types
+- Great baseline classifier for comparison

@@ -1,0 +1,101 @@
+---
+title: Introduction to Supervised Learning
+description: Learn about supervised machine learning, which refers to algorithms that learn input to output mappings from labeled examples.
+---
+
+## What is Supervised Learning?
+
+Machine learning is creating tremendous economic value today. I think 99 percent of the economic value created by machine learning today is through one type of machine learning, which is called **supervised learning**.
+
+<Note>
+  **Supervised learning** refers to algorithms that learn x to y or input to output mappings. The key characteristic is that you give your learning algorithm examples to learn from, including the right answers (correct labels y for given inputs x).
+</Note>
+
+By seeing correct pairs of input x and desired output label y, the learning algorithm eventually learns to take just the input alone without the output label and gives a reasonably accurate prediction or guess of the output.
+
+## Real-World Examples
+
+Here are some popular applications of supervised learning:
+
+- **Spam Detection**: Input is an email, output is whether it's spam or not
+- **Speech Recognition**: Input is an audio clip, output is the text transcript
+- **Machine Translation**: Input is English text, output is Spanish, Arabic, Hindi, Chinese, or other languages
+- **Online Advertising**: Inputs are ad information and user data, output is whether you'll click on the ad
+- **Self-Driving Cars**: Inputs are images and sensor data, output is the position of other cars
+- **Visual Inspection**: Input is a product image, output is whether there's a defect
+
+
+In all these applications, you first train your model with examples of inputs x and the right answers (labels y). After learning from these input-output pairs, the model can take a brand new input x and produce an appropriate output y.
+
+## Two Types of Supervised Learning
+
+### Regression Algorithms
+
+Let's look at predicting housing prices based on house size. With this data, a learning algorithm might fit a straight line or curve to predict prices.
+
+
+<Steps>
+  <Step title="Plot the data">
+    Plot house sizes (square feet) on the horizontal axis and prices (thousands of dollars) on the vertical axis.
+  </Step>
+  
+  <Step title="Fit a model">
+    The algorithm can fit a straight line or curve to the data to make predictions.
+  </Step>
+  
+  <Step title="Make predictions">
+    For a new house (e.g., 750 sq ft), read off the predicted price from the fitted line.
+  </Step>
+</Steps>
+
+
+**Regression** means trying to predict a number from infinitely many possible numbers, such as house prices which could be $150,000, $70,000, $183,000, or any other number.
+
+### Classification Algorithms
+
+Classification algorithms predict categories rather than numbers. Let's look at breast cancer detection as an example.
+
+
+Using a patient's medical records, your system tries to determine if a tumor is:
+- **Malignant** (cancerous/dangerous) - designated as class 1
+- **Benign** (not cancerous) - designated as class 0
+
+<Note>
+  One reason classification differs from regression is that we're trying to predict only a small number of possible outputs or categories. In this case, two possible outputs: 0 or 1, benign or malignant.
+</Note>
+
+
+Classification problems can use multiple input features. Instead of just tumor size, you might also use the patient's age:
+
+
+The learning algorithm finds a boundary that separates malignant tumors from benign ones:
+
+
+## Key Differences
+
+
+<Note>
+  **Regression**: Predicts numbers from infinitely many possible output numbers (e.g., house prices)
+  
+  **Classification**: Predicts categories from a small set of possible outputs (e.g., 0 or 1, cat or dog)
+</Note>
+
+## What You'll Learn
+
+In this section on supervised learning, you'll explore:
+
+- [Regression Model](/supervised-learning/regression-model)
+- [Gradient Descent](/supervised-learning/gradient-descent)
+- [Multiple Linear Regression](/supervised-learning/multiple-linear-regression)
+- [Logistic Regression](/supervised-learning/logistic-regression)
+- [Cost Function](/supervised-learning/cost-function)
+- [Overfitting](/supervised-learning/overfitting)
+
+## Summary
+
+The two major types of supervised learning are **regression** and **classification**:
+
+- In regression applications (like predicting house prices), the learning algorithm predicts numbers from infinitely many possible output numbers
+- In classification (like diagnosing tumors), the learning algorithm makes predictions of a category from a small set of possible outputs
+
+You now know what supervised learning is, including both regression and classification!

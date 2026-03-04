@@ -1,0 +1,299 @@
+---
+title: TensorFlow Implementation
+description: Learn how to implement neural networks using TensorFlow, one of the leading deep learning frameworks
+---
+
+## Introduction
+
+**TensorFlow is one of the leading frameworks for implementing deep learning algorithms**. When building projects, TensorFlow is one of the most commonly used tools (along with PyTorch).
+
+In this section, we'll focus on TensorFlow and learn how to implement inference and training using this powerful framework.
+
+## Coffee Roasting Example
+
+Let's use a practical example: optimizing coffee roasting. When roasting coffee beans, you control two main parameters:
+
+1. **Temperature** - The heat applied to the beans
+2. **Duration** - How long you roast the beans
+
+
+### The Dataset
+
+We have a dataset with:
+- Different temperatures and durations
+- Labels indicating **good coffee** (positive) or **bad coffee** (negative)
+
+
+The pattern:
+- **Too low temperature** → Undercooked beans
+- **Too short duration** → Not fully roasted
+- **Too high temperature or too long** → Overcooked/burnt beans
+- **Sweet spot** → Good coffee!
+
+<Note>
+While simplified for illustration, there have been real machine learning projects for optimizing coffee roasting!
+</Note>
+
+## Implementing Inference in TensorFlow
+
+Given features (temperature and duration), how do we make predictions?
+
+### Step 1: Set Up Input Data
+
+```python
+import numpy as np
+import tensorflow as tf
+
+# Input: 200°C for 17 minutes
+x = np.array([[200.0, 17.0]])
+```
+
+
+### Step 2: Create First Hidden Layer
+
+```python
+# Create layer with 3 units and sigmoid activation
+layer_1 = tf.keras.layers.Dense(units=3, activation='sigmoid')
+```
+
+<Note>
+**Dense** is another name for the fully-connected layers we've been learning about. As you learn more about neural networks, you'll encounter other types of layers as well.
+</Note>
+
+
+### Step 3: Compute First Layer Activations
+
+```python
+# Apply layer to input
+a1 = layer_1(x)
+# a1 might be: [0.2, 0.7, 0.3]
+```
+
+
+### Step 4: Create and Compute Second Layer
+
+```python
+# Create output layer with 1 unit
+layer_2 = tf.keras.layers.Dense(units=1, activation='sigmoid')
+
+# Compute output
+a2 = layer_2(a1)
+# a2 might be: 0.8
+```
+
+
+### Step 5: Make Binary Prediction
+
+```python
+# Threshold at 0.5
+if a2 >= 0.5:
+    y_hat = 1  # Good coffee
+else:
+    y_hat = 0  # Bad coffee
+```
+
+
+## Handwritten Digit Recognition Example
+
+Let's apply this to a more complex example: recognizing handwritten digits.
+
+### Network Architecture
+
+
+- **Input**: 64 pixel intensity values (8×8 image)
+- **Layer 1**: 25 units, sigmoid activation
+- **Layer 2**: 15 units, sigmoid activation  
+- **Layer 3**: 1 unit, sigmoid activation
+
+### Implementation
+
+```python
+import numpy as np
+import tensorflow as tf
+
+# Input: pixel intensity values
+x = np.array([[pixel values...]])  # 64 values
+
+# Layer 1
+layer_1 = tf.keras.layers.Dense(units=25, activation='sigmoid')
+a1 = layer_1(x)
+
+# Layer 2
+layer_2 = tf.keras.layers.Dense(units=15, activation='sigmoid')
+a2 = layer_2(a1)
+
+# Layer 3 (Output)
+layer_3 = tf.keras.layers.Dense(units=1, activation='sigmoid')
+a3 = layer_3(a2)
+
+# Make prediction
+if a3 >= 0.5:
+    y_hat = 1  # Digit is '1'
+else:
+    y_hat = 0  # Digit is '0'
+```
+
+
+## Data Representation in TensorFlow
+
+TensorFlow has specific conventions for representing data that differ from NumPy.
+
+### Matrices and Vectors
+
+A **matrix** is a 2D array with rows and columns:
+
+```python
+# 2×3 matrix (2 rows, 3 columns)
+matrix = np.array([[1, 2, 3],
+                   [4, 5, 6]])
+```
+
+
+Dimensions are written as **rows × columns**.
+
+### Row vs Column Vectors
+
+```python
+# 1×2 matrix (row vector)
+row_vector = np.array([[200, 17]])
+
+# 2×1 matrix (column vector)
+column_vector = np.array([[200],
+                          [17]])
+```
+
+
+<Note>
+**Double square brackets** `[[...]]` create a 2D matrix, while **single square brackets** `[...]` create a 1D array.
+</Note>
+
+### TensorFlow Tensors
+
+When you compute activations in TensorFlow:
+
+```python
+a1 = layer_1(x)
+print(a1)
+# Output: tf.Tensor([[0.2 0.7 0.3]], shape=(1, 3), dtype=float32)
+```
+
+
+<Note>
+A **tensor** is TensorFlow's data type for storing and carrying out computations on matrices efficiently. For this course, think of tensors as matrices.
+</Note>
+
+### Converting Between NumPy and TensorFlow
+
+```python
+# Convert tensor to NumPy array
+a1_numpy = a1.numpy()
+```
+
+
+## Building a Complete Neural Network
+
+TensorFlow provides a simpler way to build neural networks using the **Sequential** API.
+
+### Using Sequential
+
+Instead of manually passing data through each layer:
+
+```python
+# OLD WAY (manual)
+layer_1 = tf.keras.layers.Dense(units=3, activation='sigmoid')
+layer_2 = tf.keras.layers.Dense(units=1, activation='sigmoid')
+a1 = layer_1(x)
+a2 = layer_2(a1)
+
+# NEW WAY (Sequential)
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=3, activation='sigmoid'),
+    tf.keras.layers.Dense(units=1, activation='sigmoid')
+])
+```
+
+
+<Note>
+The **Sequential** function tells TensorFlow to create a neural network by sequentially stringing together the layers you specify.
+</Note>
+
+### Training the Model
+
+With Sequential, training is simplified:
+
+```python
+# Prepare data
+X = np.array([[200, 17],
+              [120, 5],
+              [425, 20],
+              [212, 18]])
+y = np.array([1, 0, 0, 1])
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='binary_crossentropy')
+
+# Train the model
+model.fit(X, y, epochs=100)
+```
+
+
+### Making Predictions
+
+```python
+# New example
+x_new = np.array([[200, 17]])
+
+# Make prediction
+prediction = model.predict(x_new)
+```
+
+
+### Complete Example: Digit Recognition
+
+```python
+import tensorflow as tf
+import numpy as np
+
+# Build the model
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(units=25, activation='sigmoid'),
+    tf.keras.layers.Dense(units=15, activation='sigmoid'),
+    tf.keras.layers.Dense(units=1, activation='sigmoid')
+])
+
+# Compile
+model.compile(optimizer='adam',
+              loss='binary_crossentropy')
+
+# Train
+model.fit(X_train, y_train, epochs=100)
+
+# Predict
+predictions = model.predict(X_new)
+```
+
+
+## Key Takeaways
+
+<Steps>
+  <Step title="TensorFlow Basics">
+    Use `Dense` layers to create fully-connected neural network layers
+  </Step>
+  
+  <Step title="Sequential API">
+    Use `Sequential` to string layers together into a complete model
+  </Step>
+  
+  <Step title="Training">
+    Use `compile()` and `fit()` to train your model
+  </Step>
+  
+  <Step title="Inference">
+    Use `predict()` to make predictions on new data
+  </Step>
+</Steps>
+
+## Next Steps
+
+Now that you know how to use TensorFlow's high-level API, let's learn about [how neural networks are trained](/learning-algorithms/neural-network-training) in detail.

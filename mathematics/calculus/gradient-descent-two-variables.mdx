@@ -1,0 +1,403 @@
+---
+title: Gradient Descent in Two Variables
+description: Implement and visualize gradient descent for optimizing functions in two variables, extending concepts from one-dimensional optimization.
+---
+
+## Introduction
+
+Gradient descent extends naturally to functions of multiple variables. This guide explores optimization in two variables, visualizing the descent path on 3D surfaces and contour plots.
+
+## Setup
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+%matplotlib widget
+```
+
+## Function with One Global Minimum
+
+### The Algorithm
+
+For a function $f(x, y)$, starting from initial point $(x_0, y_0)$, update using:
+
+$$x_1 = x_0 - \alpha \frac{\partial f}{\partial x}(x_0, y_0)$$
+$$y_1 = y_0 - \alpha \frac{\partial f}{\partial y}(x_0, y_0)$$
+
+where $\alpha > 0$ is the learning rate.
+
+<Note>
+The gradient vector $\nabla f = \begin{bmatrix}\frac{\partial f}{\partial x} \\ \frac{\partial f}{\partial y}\end{bmatrix}$ points in the direction of steepest ascent. We move in the opposite direction to minimize.
+</Note>
+
+### Implementation
+
+```python
+def gradient_descent(dfdx, dfdy, x, y, learning_rate=0.1, num_iterations=100):
+    for iteration in range(num_iterations):
+        x = x - learning_rate * dfdx(x, y)
+        y = y - learning_rate * dfdy(x, y)
+    return x, y
+```
+
+### Example Function
+
+```python
+# Predefined function with one global minimum
+from w2_tools import (plot_f_cont_and_surf, f_example_3, 
+                      dfdx_example_3, dfdy_example_3)
+
+# Visualize (contour plot and 3D surface)
+plot_f_cont_and_surf([0, 5], [0, 5], [74, 85], f_example_3, 
+                     cmap='coolwarm', view={'azim': -60, 'elev': 28})
+plt.show()
+```
+
+### Running Gradient Descent
+
+```python
+num_iterations = 30
+learning_rate = 0.25
+x_initial = 0.5
+y_initial = 0.6
+
+x_min, y_min = gradient_descent(dfdx_example_3, dfdy_example_3,
+                                x_initial, y_initial,
+                                learning_rate, num_iterations)
+print(f"Gradient descent result: x_min = {x_min:.4f}, y_min = {y_min:.4f}")
+```
+
+## Visualizing the Descent Path
+
+Track the path of gradient descent:
+
+```python
+def gradient_descent_with_history(dfdx, dfdy, x, y, learning_rate, num_iterations):
+    history = [(x, y)]
+    
+    for i in range(num_iterations):
+        x = x - learning_rate * dfdx(x, y)
+        y = y - learning_rate * dfdy(x, y)
+        history.append((x, y))
+    
+    return x, y, history
+
+# Run with history tracking
+x_min, y_min, path = gradient_descent_with_history(
+    dfdx_example_3, dfdy_example_3,
+    x_initial=0.5, y_initial=0.6,
+    learning_rate=0.25, num_iterations=30
+)
+
+# Extract coordinates
+path_x = [p[0] for p in path]
+path_y = [p[1] for p in path]
+path_z = [f_example_3(x, y) for x, y in path]
+```
+
+### Contour Plot with Path
+
+```python
+# Create contour plot
+x = np.linspace(0, 5, 100)
+y = np.linspace(0, 5, 100)
+X, Y = np.meshgrid(x, y)
+Z = f_example_3(X, Y)
+
+plt.figure(figsize=(10, 8))
+plt.contour(X, Y, Z, levels=20, cmap='coolwarm')
+plt.colorbar(label='f(x, y)')
+
+# Plot gradient descent path
+plt.plot(path_x, path_y, 'r.-', linewidth=2, markersize=8, label='GD path')
+plt.plot(path_x[0], path_y[0], 'go', markersize=12, label='Start')
+plt.plot(path_x[-1], path_y[-1], 'r*', markersize=15, label='End')
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Gradient Descent Path on Contour Plot')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+## Parameter Exploration
+
+### Effect of Learning Rate
+
+<Tabs>
+  <Tab title="Small (0.15)">
+    ```python
+    learning_rate = 0.15
+    num_iterations = 20
+    ```
+    - Slower convergence
+    - More iterations needed
+    - Safer, less likely to overshoot
+  </Tab>
+  
+  <Tab title="Medium (0.25)">
+    ```python
+    learning_rate = 0.25
+    num_iterations = 20
+    ```
+    - Good balance
+    - Efficient convergence
+    - Recommended starting point
+  </Tab>
+  
+  <Tab title="Large (0.5)">
+    ```python
+    learning_rate = 0.5
+    num_iterations = 20
+    ```
+    - Very fast but may overshoot
+    - Can oscillate around minimum
+    - Risk of divergence
+  </Tab>
+</Tabs>
+
+### Effect of Starting Point
+
+```python
+# Different starting points
+starts = [
+    (0.5, 0.6),   # Close to minimum
+    (3.5, 3.6),   # Far from minimum
+    (0.5, 4.5),   # Different quadrant
+    (4.5, 0.5),   # Another quadrant
+]
+
+for x0, y0 in starts:
+    x_min, y_min = gradient_descent(dfdx_example_3, dfdy_example_3,
+                                   x0, y0, learning_rate=0.25, num_iterations=30)
+    print(f"Start: ({x0}, {y0}) → End: ({x_min:.3f}, {y_min:.3f})")
+```
+
+## Function with Multiple Minima
+
+More complex surfaces can have multiple local minima.
+
+### Example
+
+```python
+# Predefined function with multiple minima
+from w2_tools import f_example_4, dfdx_example_4, dfdy_example_4
+
+# Visualize
+plot_f_cont_and_surf([0, 5], [0, 5], [6, 9.5], f_example_4,
+                     cmap='terrain', view={'azim': -63, 'elev': 21})
+plt.show()
+```
+
+### Finding Different Minima
+
+<AccordionGroup>
+  <Accordion title="Global Minimum">
+    ```python
+    # Starting point that leads to global minimum
+    x_min, y_min = gradient_descent(dfdx_example_4, dfdy_example_4,
+                                   x=0.5, y=3.0,
+                                   learning_rate=0.2,
+                                   num_iterations=30)
+    print(f"Global minimum: ({x_min:.3f}, {y_min:.3f})")
+    ```
+  </Accordion>
+  
+  <Accordion title="Local Minimum 1">
+    ```python
+    # Starting point that gets stuck in local minimum
+    x_min, y_min = gradient_descent(dfdx_example_4, dfdy_example_4,
+                                   x=2.0, y=3.0,
+                                   learning_rate=0.2,
+                                   num_iterations=20)
+    print(f"Local minimum 1: ({x_min:.3f}, {y_min:.3f})")
+    ```
+  </Accordion>
+  
+  <Accordion title="Local Minimum 2">
+    ```python
+    # Another local minimum
+    x_min, y_min = gradient_descent(dfdx_example_4, dfdy_example_4,
+                                   x=4.0, y=0.5,
+                                   learning_rate=0.2,
+                                   num_iterations=20)
+    print(f"Local minimum 2: ({x_min:.3f}, {y_min:.3f})")
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Comparing Multiple Paths
+
+Visualize how different starting points lead to different minima:
+
+```python
+plt.figure(figsize=(12, 10))
+
+# Create contour plot
+x = np.linspace(0, 5, 100)
+y = np.linspace(0, 5, 100)
+X, Y = np.meshgrid(x, y)
+Z = f_example_4(X, Y)
+
+plt.contour(X, Y, Z, levels=25, cmap='terrain', alpha=0.6)
+plt.colorbar(label='f(x, y)')
+
+# Different starting points
+starts = [(0.5, 3.0), (2.0, 3.0), (4.0, 0.5)]
+colors = ['red', 'blue', 'green']
+labels = ['Global min', 'Local min 1', 'Local min 2']
+
+for (x0, y0), color, label in zip(starts, colors, labels):
+    _, _, path = gradient_descent_with_history(
+        dfdx_example_4, dfdy_example_4,
+        x0, y0, learning_rate=0.2, num_iterations=30
+    )
+    
+    path_x = [p[0] for p in path]
+    path_y = [p[1] for p in path]
+    
+    plt.plot(path_x, path_y, f'{color}.-', linewidth=2, 
+             markersize=6, label=label, alpha=0.7)
+    plt.plot(x0, y0, f'{color}o', markersize=12)
+    plt.plot(path_x[-1], path_y[-1], f'{color}*', markersize=15)
+
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Multiple Gradient Descent Paths')
+plt.legend()
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+## Advanced Visualization: 3D Path
+
+```python
+fig = plt.figure(figsize=(14, 6))
+
+# 3D surface with path
+ax1 = fig.add_subplot(121, projection='3d')
+x = np.linspace(0, 5, 50)
+y = np.linspace(0, 5, 50)
+X, Y = np.meshgrid(x, y)
+Z = f_example_4(X, Y)
+
+ax1.plot_surface(X, Y, Z, cmap='terrain', alpha=0.6)
+ax1.plot(path_x, path_y, path_z, 'r.-', linewidth=3, markersize=6)
+ax1.set_xlabel('x')
+ax1.set_ylabel('y')
+ax1.set_zlabel('f(x, y)')
+ax1.set_title('3D Surface with GD Path')
+ax1.view_init(elev=20, azim=-60)
+
+# Convergence plot
+ax2 = fig.add_subplot(122)
+ax2.plot(path_z, 'b-o', linewidth=2, markersize=5)
+ax2.set_xlabel('Iteration')
+ax2.set_ylabel('f(x, y)')
+ax2.set_title('Convergence: Function Value vs Iteration')
+ax2.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+## Key Insights
+
+<CardGroup cols={2}>
+  <Card title="Gradient Vector" icon="arrow-trend-down">
+    Points in direction of steepest increase; we move opposite to minimize
+  </Card>
+  <Card title="Learning Rate" icon="gauge">
+    Controls step size; balance between speed and stability
+  </Card>
+  <Card title="Local Minima" icon="mountain">
+    Starting point determines which minimum is found
+  </Card>
+  <Card title="Convergence" icon="bullseye">
+    Monitor function value to detect when minimum is reached
+  </Card>
+</CardGroup>
+
+## Practical Recommendations
+
+### For Simple Functions (One Minimum)
+
+1. Start with moderate learning rate (0.1-0.3)
+2. Monitor convergence with function value plot
+3. Adjust learning rate if oscillating or converging too slowly
+
+### For Complex Functions (Multiple Minima)
+
+1. Try multiple random starting points
+2. Use smaller learning rates for stability
+3. Consider advanced methods (momentum, Adam optimizer)
+4. Track best result across all runs
+
+### Debugging Convergence Issues
+
+```python
+def diagnose_gradient_descent(dfdx, dfdy, x, y, learning_rate, num_iterations):
+    history = {'x': [x], 'y': [y], 'f': [f_example_3(x, y)], 
+               'grad_norm': []}
+    
+    for i in range(num_iterations):
+        dx = dfdx(x, y)
+        dy = dfdy(x, y)
+        grad_norm = np.sqrt(dx**2 + dy**2)
+        
+        x = x - learning_rate * dx
+        y = y - learning_rate * dy
+        
+        history['x'].append(x)
+        history['y'].append(y)
+        history['f'].append(f_example_3(x, y))
+        history['grad_norm'].append(grad_norm)
+    
+    # Plot diagnostics
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    
+    axes[0, 0].plot(history['f'])
+    axes[0, 0].set_title('Function Value')
+    axes[0, 0].set_xlabel('Iteration')
+    axes[0, 0].grid(True)
+    
+    axes[0, 1].plot(history['grad_norm'])
+    axes[0, 1].set_title('Gradient Norm')
+    axes[0, 1].set_xlabel('Iteration')
+    axes[0, 1].grid(True)
+    
+    axes[1, 0].plot(history['x'], label='x')
+    axes[1, 0].plot(history['y'], label='y')
+    axes[1, 0].set_title('Parameter Values')
+    axes[1, 0].set_xlabel('Iteration')
+    axes[1, 0].legend()
+    axes[1, 0].grid(True)
+    
+    axes[1, 1].plot(history['x'], history['y'])
+    axes[1, 1].set_title('Path in Parameter Space')
+    axes[1, 1].set_xlabel('x')
+    axes[1, 1].set_ylabel('y')
+    axes[1, 1].grid(True)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    return history
+
+history = diagnose_gradient_descent(dfdx_example_3, dfdy_example_3,
+                                   x=0.5, y=0.6,
+                                   learning_rate=0.25,
+                                   num_iterations=30)
+```
+
+## Summary
+
+- Gradient descent in 2D follows the same principles as 1D
+- The gradient vector points toward steepest ascent; we move opposite
+- Learning rate and starting point critically affect convergence
+- Multiple minima require multiple random initializations
+- Visualization helps understand and debug the optimization process
+- These concepts extend to high-dimensional optimization in neural networks

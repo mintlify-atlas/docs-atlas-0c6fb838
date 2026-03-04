@@ -1,0 +1,215 @@
+---
+title: Logistic Regression
+description: Learn about logistic regression, the most widely used classification algorithm in the world for predicting binary outcomes.
+---
+
+## Introduction
+
+Logistic regression is probably the single most widely used classification algorithm in the world. Despite its name, it's used for **classification**, not regression.
+
+<Note>
+  The name "logistic regression" comes from historical reasons, but it's actually a classification algorithm used when the output y can only be 0 or 1.
+</Note>
+
+## Why Not Linear Regression?
+
+You saw previously that linear regression is not a good algorithm for classification problems. Linear regression can predict any number, but for classification, we only want outputs of 0 or 1.
+
+## The Logistic Regression Model
+
+Let's continue with the tumor classification example where we predict if a tumor is malignant (1) or benign (0).
+
+
+Logistic regression fits an **S-shaped curve** to the data:
+
+
+If a patient has a tumor of a certain size, the algorithm might output 0.7, suggesting a 70% probability that the tumor is malignant.
+
+## The Sigmoid Function
+
+The key to logistic regression is the **sigmoid function** (also called the **logistic function**):
+
+
+The sigmoid function is defined as:
+
+```math
+g(z) = \frac{1}{1 + e^{-z}}
+```
+
+Where:
+- **e**: Mathematical constant ≈ 2.7
+- **z**: Any real number (can be negative, zero, or positive)
+
+### Properties of the Sigmoid Function
+
+<Accordion title="When z is large">
+  If z = 100:
+  ```math
+  g(100) = \frac{1}{1 + e^{-100}} \approx \frac{1}{1 + \text{tiny number}} \approx 1
+  ```
+  The sigmoid output is very close to 1.
+</Accordion>
+
+<Accordion title="When z is large and negative">
+  If z = -100:
+  ```math
+  g(-100) = \frac{1}{1 + e^{100}} \approx \frac{1}{\text{giant number}} \approx 0
+  ```
+  The sigmoid output is very close to 0.
+</Accordion>
+
+<Accordion title="When z is zero">
+  If z = 0:
+  ```math
+  g(0) = \frac{1}{1 + e^{0}} = \frac{1}{1 + 1} = 0.5
+  ```
+  The sigmoid output is exactly 0.5.
+</Accordion>
+
+<Note>
+  The sigmoid function always outputs a value between 0 and 1, making it perfect for representing probabilities.
+</Note>
+
+## Building the Logistic Regression Model
+
+Logistic regression is built in two steps:
+
+<Steps>
+  <Step title="Compute z">
+    First, compute a linear combination of features:
+    ```math
+    z = w \cdot x + b
+    ```
+    This is the same as linear regression.
+  </Step>
+  
+  <Step title="Apply sigmoid">
+    Then, pass z through the sigmoid function:
+    ```math
+    g(z) = \frac{1}{1 + e^{-z}}
+    ```
+  </Step>
+</Steps>
+
+
+Putting these together:
+
+```math
+f_{w,b}(x) = g(w \cdot x + b) = \frac{1}{1 + e^{-(w \cdot x + b)}}
+```
+
+This is the **logistic regression model**. It inputs a feature or set of features x and outputs a number between 0 and 1.
+
+## Interpreting the Output
+
+The output of logistic regression represents the **probability** that y = 1 given input x.
+
+
+### Example: Tumor Classification
+
+If a patient has a tumor of size x and the model outputs 0.7:
+- The model predicts a **70% probability** that the tumor is malignant (y = 1)
+- This means a **30% probability** that the tumor is benign (y = 0)
+
+<Note>
+  Since y must be either 0 or 1, the probabilities must add up to 100%:
+  - P(y = 1) + P(y = 0) = 1
+  - If P(y = 1) = 0.7, then P(y = 0) = 0.3
+</Note>
+
+### Mathematical Notation
+
+You might see this notation in research papers:
+
+```math
+f(x) = P(y = 1 | x; w, b)
+```
+
+This reads as: "f(x) is the probability that y equals 1, given input x, with parameters w and b."
+
+## Example with Python
+
+Here's how to implement the sigmoid function:
+
+```python
+import numpy as np
+
+def sigmoid(z):
+    """
+    Compute the sigmoid of z
+    """
+    return 1 / (1 + np.exp(-z))
+
+# Example
+z = 0
+print(sigmoid(z))  # Output: 0.5
+
+z = 4
+print(sigmoid(z))  # Output: 0.982 (very close to 1)
+
+z = -4
+print(sigmoid(z))  # Output: 0.018 (very close to 0)
+```
+
+## Logistic Regression for Multiple Features
+
+Just like linear regression, logistic regression can use multiple features:
+
+```math
+f_{w,b}(x) = g(w_1 x_1 + w_2 x_2 + ... + w_n x_n + b)
+```
+
+Or in vector notation:
+
+```math
+f_{w,b}(x) = g(\vec{w} \cdot \vec{x} + b)
+```
+
+Where:
+```math
+g(z) = \frac{1}{1 + e^{-z}}
+```
+
+## Decision Boundary
+
+How do we convert a probability (like 0.7) to a final prediction of 0 or 1?
+
+Common approach: Use a **threshold** of 0.5
+- If f(x) ≥ 0.5, predict y = 1
+- If f(x) < 0.5, predict y = 0
+
+Since g(z) = 0.5 when z = 0:
+- Predict y = 1 when w · x + b ≥ 0
+- Predict y = 0 when w · x + b < 0
+
+The **decision boundary** is where w · x + b = 0.
+
+## Applications
+
+Logistic regression is used in:
+
+- **Email spam detection**: Is this email spam?
+- **Medical diagnosis**: Does the patient have a disease?
+- **Credit scoring**: Will the customer default on a loan?
+- **Customer churn**: Will the customer leave?
+- **Ad click prediction**: Will the user click this ad?
+
+<Warning>
+  Logistic regression is for **binary classification** (two classes). For more than two classes, you can use multinomial logistic regression or other algorithms.
+</Warning>
+
+## Summary
+
+Logistic regression:
+- Is the most widely used classification algorithm
+- Uses the sigmoid function to output probabilities between 0 and 1
+- Can be interpreted as P(y = 1 | x)
+- Extends naturally to multiple features
+- Uses a decision boundary to make final predictions
+
+Next, you'll learn:
+- [Cost Function](/supervised-learning/cost-function) for logistic regression
+- How to train logistic regression using gradient descent
+- Decision boundaries in more detail
+
+Logistic regression is a fundamental building block in machine learning, and understanding it well will help you with more advanced algorithms!

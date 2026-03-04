@@ -1,97 +1,208 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Learn AI, Machine Learning & Deep Learning"
+description: "Master machine learning, neural networks, and mathematical foundations with comprehensive tutorials and hands-on examples"
+mode: "custom"
 ---
 
-## Setting up
+<div className="relative w-full overflow-hidden bg-gradient-to-br from-[#22bdd5] via-[#553483] to-[#0f1117] dark:from-[#1a1d27] dark:via-[#553483] dark:to-[#22bdd5]">
+  <div className="absolute inset-0 bg-black/40"></div>
+  <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-24">
+    <div className="grid lg:grid-cols-12 gap-8 items-center">
+      <div className="lg:col-span-7">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+          Welcome to Mindect
+        </h1>
+        <p className="text-lg sm:text-xl text-white/90 max-w-2xl mb-8">
+          Your comprehensive learning platform for AI, machine learning, deep learning, and mathematical foundations. From beginner-friendly tutorials to advanced neural network architectures.
+        </p>
+        <div className="flex flex-wrap gap-4">
+          <a 
+            href="/quickstart" 
+            className="inline-flex items-center px-6 py-3 rounded-lg bg-white text-[#22bdd5] font-semibold hover:bg-gray-100 transition-colors"
+          >
+            Get Started
+          </a>
+          <a 
+            href="/introduction" 
+            className="inline-flex items-center px-6 py-3 rounded-lg border border-white/30 bg-white/10 text-white font-semibold hover:bg-white/20 transition-colors"
+          >
+            Explore Documentation
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+    Quick Start
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Begin your machine learning journey in three simple steps
+  </p>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+  <Steps>
+    <Step title="Set up your environment">
+      Install Python and Jupyter Notebook to run interactive machine learning examples. Jupyter is the default environment used by data scientists and machine learning practitioners worldwide.
+      
+      ```bash
+      pip install jupyter numpy matplotlib
+      jupyter notebook
+      ```
+      
+      <Note>We recommend Python 3.8 or higher for full compatibility with modern ML libraries</Note>
+    </Step>
+    
+    <Step title="Explore your first concept">
+      Start with supervised learning fundamentals. Learn how machines learn from labeled data to make predictions on new, unseen examples.
+      
+      ```python
+      import numpy as np
+      
+      # Simple linear regression example
+      X = np.array([1, 2, 3, 4, 5])
+      y = np.array([2, 4, 6, 8, 10])
+      
+      # Calculate slope and intercept
+      slope = np.sum((X - np.mean(X)) * (y - np.mean(y))) / np.sum((X - np.mean(X))**2)
+      intercept = np.mean(y) - slope * np.mean(X)
+      
+      print(f"y = {slope}x + {intercept}")
+      ```
+    </Step>
+    
+    <Step title="Build your first model">
+      Apply what you've learned by implementing a complete machine learning model. Follow our hands-on tutorials to train neural networks, optimize cost functions, and make predictions.
+      
+      <Accordion title="See example output">
+        ```
+        Epoch 1/100: Cost = 0.693
+        Epoch 50/100: Cost = 0.132
+        Epoch 100/100: Cost = 0.045
+        Training complete! Accuracy: 94.3%
+        ```
+      </Accordion>
+    </Step>
+  </Steps>
+</div>
 
-## Make it yours
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+    Explore by Topic
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Choose your learning path based on your interests and goals
+  </p>
 
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
+  <CardGroup cols={2}>
     <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+      title="Supervised Learning"
+      icon="chart-line"
+      href="/supervised-learning/introduction"
+    >
+      Master regression and classification with real-world examples. Learn gradient descent, cost functions, and regularization techniques.
+    </Card>
+    <Card
+      title="Neural Networks"
+      icon="brain"
+      href="/learning-algorithms/neural-networks"
+    >
+      Build deep learning models from scratch. Understand forward propagation, backpropagation, and activation functions.
+    </Card>
+    <Card
+      title="Linear Algebra"
+      icon="calculator"
+      href="/mathematics/algebra/introduction"
+    >
+      Learn matrix operations, vector spaces, and linear transformations essential for machine learning.
+    </Card>
+    <Card
+      title="Calculus & Optimization"
+      icon="function"
+      href="/mathematics/calculus/introduction"
+    >
+      Master differentiation, gradient descent, and optimization techniques used in training ML models.
+    </Card>
+    <Card
+      title="Probability & Statistics"
+      icon="dice"
+      href="/mathematics/probability/introduction"
+    >
+      Explore statistical distributions, Naive Bayes, and exploratory data analysis fundamentals.
+    </Card>
+    <Card
+      title="TensorFlow Implementation"
+      icon="code"
+      href="/learning-algorithms/tensorflow-implementation"
+    >
+      Implement neural networks using TensorFlow. Learn to build, train, and deploy production-ready models.
+    </Card>
+  </CardGroup>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+    Key Features
+  </h2>
+  <p className="text-base text-gray-600 dark:text-gray-400 mb-8">
+    Everything you need to master machine learning and AI
+  </p>
 
-Everything you need to create world-class documentation.
+  <div className="grid md:grid-cols-3 gap-6">
+    <div className="p-6 rounded-2xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+      <div className="text-3xl mb-4">📚</div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Comprehensive Tutorials
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Step-by-step guides covering machine learning algorithms, neural networks, and mathematical foundations
+      </p>
+    </div>
+    
+    <div className="p-6 rounded-2xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+      <div className="text-3xl mb-4">💻</div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Hands-on Examples
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Interactive Jupyter notebooks with real code you can run and experiment with immediately
+      </p>
+    </div>
+    
+    <div className="p-6 rounded-2xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+      <div className="text-3xl mb-4">🎓</div>
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        Beginner Friendly
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Clear explanations and progressive difficulty levels suitable for learners at any stage
+      </p>
+    </div>
+  </div>
+</div>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <div className="p-8 rounded-2xl border dark:border-[#27272a] border-gray-200 dark:bg-[#1a1d27] bg-gray-50">
+    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+      Ready to start learning?
+    </h2>
+    <p className="text-base text-gray-600 dark:text-gray-400 mb-6 max-w-2xl">
+      Join thousands of learners mastering AI and machine learning. Start with our quickstart guide or dive into specific topics that interest you.
+    </p>
+    <div className="flex flex-wrap gap-4">
+      <a 
+        href="/quickstart" 
+        className="inline-flex items-center px-6 py-3 rounded-lg bg-[#22bdd5] text-white font-semibold hover:bg-[#1da3bb] transition-colors"
+      >
+        Start Learning Now
+      </a>
+      <a 
+        href="/guides/jupyter-notebook" 
+        className="inline-flex items-center px-6 py-3 rounded-lg border dark:border-[#27272a] border-gray-300 dark:bg-[#242838] bg-white text-gray-900 dark:text-white font-semibold hover:dark:bg-[#2a2e42] hover:bg-gray-50 transition-colors"
+      >
+        Setup Guide
+      </a>
+    </div>
+  </div>
+</div>

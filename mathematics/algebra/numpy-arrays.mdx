@@ -1,0 +1,408 @@
+---
+title: Introduction to NumPy Arrays
+description: Learn about NumPy arrays, indexing, slicing, stacking, and fundamental operations for numerical computing in Python.
+---
+
+Welcome to your first topic in linear algebra! NumPy (Numerical Python) is the fundamental package for scientific computing in Python. In this guide, you'll learn how to create and manipulate NumPy arrays, which are the foundation for all numerical operations in machine learning.
+
+## What You'll Learn
+
+After completing this section, you will be able to:
+
+- Use NumPy functions to create arrays and perform array operations
+- Use indexing and slicing for 2-D arrays
+- Find the shape of an array, reshape it, and stack it horizontally and vertically
+- Understand the advantages of NumPy arrays over Python lists
+
+## Getting Started with NumPy
+
+First, import the NumPy library:
+
+```python
+import numpy as np
+```
+
+## Why NumPy Arrays?
+
+NumPy arrays offer significant advantages over Python lists:
+
+- **Speed**: NumPy operations are much faster than Python list operations
+- **Memory Efficient**: Arrays take up less space than lists
+- **Convenience**: Rich set of built-in mathematical functions
+- **Vectorization**: Perform operations on entire arrays without loops
+
+### Comparison: Lists vs Arrays
+
+Python lists are convenient but limited:
+
+```python
+# Python lists can store different data types
+my_list = [1, "hello", 3.14, True]
+
+# But operations are slow and limited
+list1 = [1, 2, 3]
+list2 = [4, 5, 6]
+list1 + list2  # Concatenates: [1, 2, 3, 4, 5, 6]
+```
+
+NumPy arrays are faster and more powerful:
+
+```python
+# NumPy arrays contain elements of the same type
+array1 = np.array([1, 2, 3])
+array2 = np.array([4, 5, 6])
+array1 + array2  # Element-wise addition: [5, 7, 9]
+```
+
+## Creating NumPy Arrays
+
+### From Python Lists
+
+The simplest way to create an array:
+
+```python
+# Create a 1-D array
+a = np.array([1, 2, 3])
+print(a)  # Output: [1 2 3]
+```
+
+### Using np.arange()
+
+Create arrays with evenly spaced values:
+
+```python
+# Array from 0 to 2 (3 integers)
+b = np.arange(3)
+print(b)  # Output: [0 1 2]
+
+# Array from 1 to 19, step by 3
+c = np.arange(1, 20, 3)
+print(c)  # Output: [ 1  4  7 10 13 16 19]
+```
+
+### Using np.linspace()
+
+Create arrays with a specified number of evenly spaced values:
+
+```python
+# 5 values from 0 to 100
+lin_spaced_arr = np.linspace(0, 100, 5)
+print(lin_spaced_arr)
+# Output: [  0.  25.  50.  75. 100.]
+```
+
+<Callout type="info">
+`np.linspace()` returns floats by default. You can specify `dtype=int` to get integers.
+</Callout>
+
+```python
+lin_spaced_arr_int = np.linspace(0, 100, 5, dtype=int)
+print(lin_spaced_arr_int)
+# Output: [  0  25  50  75 100]
+```
+
+### Special Arrays
+
+NumPy provides convenient functions for creating common arrays:
+
+```python
+# Array of ones
+ones_arr = np.ones(3)
+print(ones_arr)  # Output: [1. 1. 1.]
+
+# Array of zeros
+zeros_arr = np.zeros(3)
+print(zeros_arr)  # Output: [0. 0. 0.]
+
+# Empty array (uninitialized)
+empt_arr = np.empty(3)
+print(empt_arr)  # Output: Random values
+
+# Random array (values between 0 and 1)
+rand_arr = np.random.rand(3)
+print(rand_arr)  # Output: [0.xxx 0.xxx 0.xxx]
+```
+
+## Multidimensional Arrays
+
+NumPy arrays can have multiple dimensions:
+
+```python
+# Create a 2-D array (matrix)
+two_dim_arr = np.array([[1, 2, 3], [4, 5, 6]])
+print(two_dim_arr)
+```
+
+Output:
+```
+[[1 2 3]
+ [4 5 6]]
+```
+
+### Reshaping Arrays
+
+Convert a 1-D array to a multidimensional array:
+
+```python
+# 1-D array
+one_dim_arr = np.array([1, 2, 3, 4, 5, 6])
+
+# Reshape to 2 rows, 3 columns
+multi_dim_arr = np.reshape(one_dim_arr, (2, 3))
+print(multi_dim_arr)
+```
+
+Output:
+```
+[[1 2 3]
+ [4 5 6]]
+```
+
+### Array Properties
+
+Get information about array dimensions:
+
+```python
+# Number of dimensions
+print(multi_dim_arr.ndim)  # Output: 2
+
+# Shape (rows, columns)
+print(multi_dim_arr.shape)  # Output: (2, 3)
+
+# Total number of elements
+print(multi_dim_arr.size)  # Output: 6
+```
+
+## Array Operations
+
+### Element-wise Arithmetic
+
+NumPy performs operations element by element:
+
+```python
+arr_1 = np.array([2, 4, 6])
+arr_2 = np.array([1, 3, 5])
+
+print(arr_1 + arr_2)  # [3 7 11]
+print(arr_1 - arr_2)  # [1 1 1]
+print(arr_1 * arr_2)  # [ 2 12 30]
+```
+
+### Broadcasting
+
+Operations between arrays and scalars:
+
+```python
+# Convert miles to kilometers (1 mile = 1.6 km)
+miles = np.array([1, 2, 5, 10])
+kilometers = miles * 1.6
+print(kilometers)  # [ 1.6  3.2  8.  16. ]
+```
+
+<Callout type="tip">
+Broadcasting allows NumPy to perform operations on arrays of different shapes. The scalar `1.6` is automatically "broadcast" to match the array's shape.
+</Callout>
+
+## Indexing and Slicing
+
+### Indexing 1-D Arrays
+
+Access elements using zero-based indexing:
+
+```python
+a = np.array([1, 2, 3, 4, 5])
+
+print(a[0])  # First element: 1
+print(a[2])  # Third element: 3
+print(a[-1]) # Last element: 5
+```
+
+### Indexing 2-D Arrays
+
+Two methods to access elements:
+
+```python
+two_dim = np.array([[1, 2, 3],
+                    [4, 5, 6], 
+                    [7, 8, 9]])
+
+# Method 1: Two sets of brackets
+print(two_dim[2][1])  # Output: 8
+
+# Method 2: Single bracket with comma (preferred)
+print(two_dim[2, 1])  # Output: 8
+```
+
+### Slicing
+
+Extract subarrays using slice notation `[start:end:step]`:
+
+```python
+a = np.array([1, 2, 3, 4, 5])
+
+# Elements from index 1 to 3 (exclusive)
+print(a[1:4])  # [2 3 4]
+
+# First three elements
+print(a[:3])   # [1 2 3]
+
+# Elements from index 2 to end
+print(a[2:])   # [3 4 5]
+
+# Every other element
+print(a[::2])  # [1 3 5]
+```
+
+### Slicing 2-D Arrays
+
+```python
+two_dim = np.array([[1, 2, 3],
+                    [4, 5, 6], 
+                    [7, 8, 9]])
+
+# First two rows
+print(two_dim[0:2])
+# Output:
+# [[1 2 3]
+#  [4 5 6]]
+
+# All rows, second column
+print(two_dim[:, 1])
+# Output: [2 5 8]
+
+# Last two rows, first two columns
+print(two_dim[1:3, 0:2])
+# Output:
+# [[4 5]
+#  [7 8]]
+```
+
+## Stacking Arrays
+
+Combine multiple arrays:
+
+### Vertical Stacking
+
+```python
+a1 = np.array([[1, 1], [2, 2]])
+a2 = np.array([[3, 3], [4, 4]])
+
+vert_stack = np.vstack((a1, a2))
+print(vert_stack)
+```
+
+Output:
+```
+[[1 1]
+ [2 2]
+ [3 3]
+ [4 4]]
+```
+
+### Horizontal Stacking
+
+```python
+horz_stack = np.hstack((a1, a2))
+print(horz_stack)
+```
+
+Output:
+```
+[[1 1 3 3]
+ [2 2 4 4]]
+```
+
+### Splitting Arrays
+
+Split arrays into multiple sub-arrays:
+
+```python
+horz_stack = np.array([[1, 1, 3, 3],
+                       [2, 2, 4, 4]])
+
+# Split into 2 equal parts
+horz_split_two = np.hsplit(horz_stack, 2)
+print(horz_split_two)
+# Output: [array([[1, 1], [2, 2]]), array([[3, 3], [4, 4]])]
+
+# Split after the first column
+horz_split_first = np.hsplit(horz_stack, [1])
+print(horz_split_first)
+# Output: [array([[1], [2]]), array([[1, 3, 3], [2, 4, 4]])]
+```
+
+## Data Types
+
+NumPy arrays have a fixed data type:
+
+```python
+# Integer array
+int_arr = np.array([1, 2, 3], dtype=int)
+print(int_arr.dtype)  # int64 (or int32)
+
+# Float array
+float_arr = np.array([1, 2, 3], dtype=float)
+print(float_arr.dtype)  # float64
+
+# String array
+char_arr = np.array(['Welcome to Math for ML!'])
+print(char_arr.dtype)  # <U23 (unicode string)
+```
+
+## Performance: Vectorization
+
+Vectorized operations are much faster than loops:
+
+```python
+import time
+
+# Create large arrays
+a = np.random.rand(1000000)
+b = np.random.rand(1000000)
+
+# Using a loop (slow)
+tic = time.time()
+c = np.zeros(1000000)
+for i in range(1000000):
+    c[i] = a[i] + b[i]
+toc = time.time()
+print(f"Loop time: {1000*(toc-tic):.2f} ms")
+
+# Using vectorization (fast)
+tic = time.time()
+c = a + b
+toc = time.time()
+print(f"Vectorized time: {1000*(toc-tic):.2f} ms")
+```
+
+<Callout type="warning">
+Vectorized operations can be **100x faster** or more compared to loops. Always prefer vectorization when possible!
+</Callout>
+
+## Key Takeaways
+
+<CardGroup cols={2}>
+  <Card title="Array Creation" icon="plus">
+    Use `np.array()`, `np.arange()`, `np.linspace()`, and special functions like `np.ones()`, `np.zeros()`
+  </Card>
+  
+  <Card title="Array Properties" icon="info">
+    Check dimensions with `.ndim`, `.shape`, and `.size`
+  </Card>
+  
+  <Card title="Indexing & Slicing" icon="scissors">
+    Access elements with brackets, use `[start:end:step]` for slices
+  </Card>
+  
+  <Card title="Vectorization" icon="bolt">
+    Always prefer vectorized operations over loops for better performance
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Now that you understand NumPy arrays, you're ready to learn how to use them to represent and solve linear systems of equations.
+
+<Card title="Next: Linear Systems" icon="arrow-right" href="/mathematics/algebra/linear-systems">
+  Learn how to represent systems of equations as matrices
+</Card>

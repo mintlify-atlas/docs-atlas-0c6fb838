@@ -1,0 +1,176 @@
+---
+title: Introduction to Linear Algebra
+description: Learn the fundamental concepts of linear algebra for machine learning, including vectors, matrices, and linear transformations.
+---
+
+Welcome to Linear Algebra for Machine Learning! This section covers the essential linear algebra concepts you'll need to understand modern machine learning algorithms.
+
+## Why Linear Algebra?
+
+Linear algebra is the mathematical foundation of machine learning. Almost every aspect of ML relies on linear algebra:
+
+- **Data Representation**: Datasets are stored as matrices and vectors
+- **Neural Networks**: Layers are matrix transformations
+- **Dimensionality Reduction**: PCA and other techniques use eigenvalue decomposition
+- **Optimization**: Gradient descent operates on vector spaces
+
+## What You'll Learn
+
+This linear algebra course is organized into practical, hands-on lessons:
+
+### 1. NumPy Arrays
+
+Start with the fundamental data structure for numerical computing in Python. Learn to create, manipulate, and perform operations on arrays.
+
+**Key Topics**:
+- Creating 1-D and multi-dimensional arrays
+- Array indexing and slicing
+- Stacking and splitting arrays
+- Broadcasting and vectorization
+
+### 2. Linear Systems
+
+Understand how to represent systems of linear equations as matrices and solve them computationally.
+
+**Key Topics**:
+- Matrix representation of linear systems
+- Using `np.linalg.solve()` to find solutions
+- Determinants and matrix singularity
+- Visualizing solutions graphically
+
+### 3. Vector Operations
+
+Master the fundamental operations on vectors that form the basis of many ML algorithms.
+
+**Key Topics**:
+- Scalar multiplication
+- Vector addition and subtraction
+- Dot product (scalar product)
+- Vector norms and distance
+- Vectorized vs loop-based implementations
+
+### 4. Matrix Multiplication
+
+Learn how to multiply matrices and understand the geometric meaning of these operations.
+
+**Key Topics**:
+- Definition of matrix multiplication
+- Using `np.matmul()` and `@` operator
+- Broadcasting in NumPy
+- Applications to linear regression
+
+### 5. Linear Transformations
+
+Explore how matrices transform geometric spaces and see applications in computer graphics.
+
+**Key Topics**:
+- Transformations as matrix multiplication
+- Scaling, reflection, and rotation
+- Composition of transformations
+- Applications to image processing
+
+### 6. Eigenvalues and Eigenvectors
+
+Discover the special vectors that only get scaled (not rotated) by matrix transformations.
+
+**Key Topics**:
+- Definition and geometric interpretation
+- Computing eigenvalues with `np.linalg.eig()`
+- Eigenvalues of standard transformations
+- Applications to data analysis
+
+## Mathematical Prerequisites
+
+This course assumes:
+
+- Basic arithmetic and algebra
+- Familiarity with functions and graphs
+- Comfort with mathematical notation
+
+## Programming Prerequisites
+
+You should have:
+
+- Basic Python knowledge
+- Understanding of lists and loops
+- Willingness to learn NumPy
+
+## Course Philosophy
+
+**Theory meets Practice**: Each concept is presented with:
+1. Mathematical definition
+2. Geometric intuition
+3. Python implementation
+4. Machine learning application
+
+**Hands-On Learning**: All lessons include:
+- Working code examples
+- Visualizations
+- Exercises to build intuition
+
+## Tools You'll Use
+
+<CodeGroup>
+
+```python NumPy
+import numpy as np
+
+# Create a matrix
+A = np.array([[1, 2], [3, 4]])
+
+# Create a vector
+v = np.array([5, 6])
+
+# Matrix-vector multiplication
+result = A @ v
+print(result)  # Output: [17 39]
+```
+
+```python Matplotlib
+import matplotlib.pyplot as plt
+
+# Visualize vectors
+plt.quiver(0, 0, 3, 4, angles='xy', scale_units='xy', scale=1)
+plt.xlim(-1, 5)
+plt.ylim(-1, 5)
+plt.grid()
+plt.show()
+```
+
+</CodeGroup>
+
+## Applications in Machine Learning
+
+As you progress through this course, you'll see how linear algebra appears in:
+
+- **Linear Regression**: Solving $X^TX\beta = X^Ty$
+- **Neural Networks**: Forward propagation as matrix multiplication
+- **PCA**: Finding principal components through eigendecomposition
+- **SVD**: Matrix factorization for recommendation systems
+- **Image Processing**: Transformations and filters as matrix operations
+
+<Card title="Ready to start?" icon="rocket" href="/mathematics/algebra/numpy-arrays">
+  Begin with NumPy Arrays to learn the fundamental data structure
+</Card>
+
+## Learning Tips
+
+<AccordionGroup>
+  <Accordion title="Visualize Everything">
+    Linear algebra is inherently geometric. Always try to visualize what matrices and vectors are doing in space.
+  </Accordion>
+  
+  <Accordion title="Code Along">
+    Don't just read the code - type it out and experiment with different values.
+  </Accordion>
+  
+  <Accordion title="Check Dimensions">
+    Always be aware of matrix and vector dimensions. Most errors come from dimension mismatches.
+  </Accordion>
+  
+  <Accordion title="Connect to ML">
+    As you learn each concept, think about where you've seen it in machine learning.
+  </Accordion>
+</AccordionGroup>
+
+Let's begin your journey into linear algebra!

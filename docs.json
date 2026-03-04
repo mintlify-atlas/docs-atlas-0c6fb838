@@ -1,122 +1,127 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Mindect",
+  "theme": "almond",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#22bdd5",
+    "light": "#553483",
+    "dark": "#22bdd5"
   },
   "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/gitstar-oc/mindect"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/gitstar-oc/mindect"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Machine Learning",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Supervised Learning",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "supervised-learning/introduction",
+              "supervised-learning/regression-model",
+              "supervised-learning/gradient-descent",
+              "supervised-learning/multiple-linear-regression",
+              "supervised-learning/logistic-regression",
+              "supervised-learning/cost-function",
+              "supervised-learning/overfitting"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Unsupervised Learning",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "unsupervised-learning/introduction",
+              "unsupervised-learning/clustering"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Learning Algorithms",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "learning-algorithms/introduction",
+              "learning-algorithms/neural-networks",
+              "learning-algorithms/neural-network-intuition",
+              "learning-algorithms/neural-network-model",
+              "learning-algorithms/tensorflow-implementation",
+              "learning-algorithms/neural-network-training",
+              "learning-algorithms/vectorization",
+              "learning-algorithms/agi"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Mathematics",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Get Started",
             "pages": [
-              "api-reference/introduction"
+              "mathematics/introduction"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Linear Algebra",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "mathematics/algebra/introduction",
+              "mathematics/algebra/numpy-arrays",
+              "mathematics/algebra/linear-systems",
+              "mathematics/algebra/vector-operations",
+              "mathematics/algebra/matrix-multiplication",
+              "mathematics/algebra/linear-transformations",
+              "mathematics/algebra/eigenvalues"
+            ]
+          },
+          {
+            "group": "Calculus",
+            "pages": [
+              "mathematics/calculus/introduction",
+              "mathematics/calculus/differentiation",
+              "mathematics/calculus/gradient-descent-one-variable",
+              "mathematics/calculus/gradient-descent-two-variables",
+              "mathematics/calculus/perceptron",
+              "mathematics/calculus/newtons-method"
+            ]
+          },
+          {
+            "group": "Probability & Statistics",
+            "pages": [
+              "mathematics/probability/introduction",
+              "mathematics/probability/birthday-problem",
+              "mathematics/probability/exploratory-data-analysis",
+              "mathematics/probability/naive-bayes",
+              "mathematics/probability/distributions"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Setup",
+            "pages": [
+              "guides/jupyter-notebook",
+              "guides/python-setup",
+              "guides/contributing"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

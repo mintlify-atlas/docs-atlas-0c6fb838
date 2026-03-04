@@ -1,0 +1,472 @@
+---
+title: Exploratory Data Analysis
+description: Learn to analyze and visualize real-world data using descriptive statistics, probability concepts, and correlation analysis with pandas and matplotlib.
+---
+
+## Introduction
+
+Exploratory Data Analysis (EDA) is the critical first step in understanding your data. This guide uses rideshare data from Chicago to demonstrate practical EDA techniques combining statistics and visualization.
+
+## Setup
+
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set visualization style
+sns.set_style('whitegrid')
+plt.rcParams['figure.figsize'] = (10, 6)
+```
+
+## Loading the Dataset
+
+We'll use Chicago rideshare data from 2022:
+
+```python
+# Load the cleaned dataset
+df = pd.read_csv('data/rideshare_2022_cleaned.csv', 
+                 parse_dates=['trip_start_timestamp', 'date'])
+
+# Display first few rows
+print(df.head())
+print(f"\nDataset shape: {df.shape}")
+print(f"Columns: {df.columns.tolist()}")
+```
+
+## Summary Statistics
+
+The `.describe()` method provides quick statistical overview:
+
+```python
+# Get summary statistics for numerical columns
+summary = df.describe()
+print(summary)
+```
+
+<Note>
+The output shows count, mean, std (standard deviation), min, 25% (Q1), 50% (median/Q2), 75% (Q3), and max for each numerical column.
+</Note>
+
+### Understanding the Statistics
+
+<AccordionGroup>
+  <Accordion title="Count">
+    Number of non-missing values. Missing data may indicate quality issues.
+  </Accordion>
+  
+  <Accordion title="Mean vs Median">
+    - If mean > median: right-skewed distribution (long tail to the right)
+    - If mean < median: left-skewed distribution
+    - If mean ≈ median: roughly symmetric distribution
+  </Accordion>
+  
+  <Accordion title="Standard Deviation">
+    Measures spread. High std indicates high variability in the data.
+  </Accordion>
+  
+  <Accordion title="Quartiles (25%, 50%, 75%)">
+    Divide data into four equal parts:
+    - Q1 (25%): 25% of data is below this value
+    - Q2 (50%): Median
+    - Q3 (75%): 75% of data is below this value
+    - IQR = Q3 - Q1 (Interquartile Range)
+  </Accordion>
+</AccordionGroup>
+
+### Analyzing Specific Columns
+
+```python
+# Focus on trip distance
+print("Trip Miles Statistics:")
+print(f"Mean: {df['trip_miles'].mean():.2f} miles")
+print(f"Median: {df['trip_miles'].median():.2f} miles")
+print(f"Std Dev: {df['trip_miles'].std():.2f} miles")
+print(f"Min: {df['trip_miles'].min():.2f} miles")
+print(f"Max: {df['trip_miles'].max():.2f} miles")
+
+# Is the distribution skewed?
+if df['trip_miles'].mean() > df['trip_miles'].median():
+    print("\nDistribution is right-skewed (long tail to the right)")
+```
+
+## Box Plots
+
+Box plots visualize the distribution and identify outliers:
+
+```python
+# Create box plot for fares
+plt.figure(figsize=(10, 6))
+df.boxplot(column='fare')
+plt.title('Distribution of Ride Fares', fontsize=14)
+plt.ylabel('Fare ($)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+### Understanding Box Plots
+
+The box plot shows:
+- **Box**: Contains the middle 50% of data (IQR)
+- **Line in box**: Median (Q2)
+- **Whiskers**: Extend to 1.5 × IQR from Q1 and Q3
+- **Points outside whiskers**: Outliers
+
+```python
+# Compare across different days
+plt.figure(figsize=(12, 6))
+df.boxplot(column='tip', by='weekday')
+plt.suptitle('')  # Remove default title
+plt.title('Tip Distribution by Day of Week', fontsize=14)
+plt.xlabel('Day of Week', fontsize=12)
+plt.ylabel('Tip ($)', fontsize=12)
+plt.ylim(-2, 52)  # Limit y-axis to see detail
+plt.show()
+```
+
+<Warning>
+Notice that Sunday's box plot might be missing or very small. This could indicate that most tips on Sunday are zero (no tips given).
+</Warning>
+
+### Grouped Statistics
+
+```python
+# Statistics by day of week
+tip_by_day = df.groupby('weekday')['tip'].describe()
+print("Tip statistics by weekday:")
+print(tip_by_day)
+
+# Why is Sunday different?
+sunday_data = df[df['weekday'] == 'Sunday']['tip']
+print(f"\nSunday tips:")
+print(f"Percentage of zero tips: {(sunday_data == 0).sum() / len(sunday_data) * 100:.1f}%")
+```
+
+## Filtering and Analysis
+
+### Analyzing Tippers Only
+
+```python
+# Filter out non-tippers
+df_tippers = df[df['tip'] > 0]
+
+print(f"Total rides: {len(df)}")
+print(f"Rides with tips: {len(df_tippers)}")
+print(f"Percentage who tip: {len(df_tippers)/len(df)*100:.1f}%")
+
+# Box plot for tippers only
+plt.figure(figsize=(12, 6))
+df_tippers.boxplot(column='tip', by='weekday')
+plt.suptitle('')
+plt.title('Tip Distribution by Weekday (Tippers Only)', fontsize=14)
+plt.xlabel('Day of Week', fontsize=12)
+plt.ylabel('Tip ($)', fontsize=12)
+plt.show()
+```
+
+### Time-Based Analysis
+
+Extract hour from timestamp:
+
+```python
+# Add hour column
+df['hour'] = df['trip_start_timestamp'].dt.hour
+
+# Tip percentage by hour
+percentage_tippers_hourly = (
+    df[df['tip'] > 0].groupby('hour')['tip'].count() / 
+    df.groupby('hour')['tip'].count() * 100
+)
+
+# Visualize
+plt.figure(figsize=(12, 6))
+percentage_tippers_hourly.plot(kind='line', marker='o', linewidth=2, markersize=8)
+plt.title('Percentage of Riders Who Tip by Hour', fontsize=14)
+plt.xlabel('Hour of Day', fontsize=12)
+plt.ylabel('Percentage (%)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.xticks(range(0, 24))
+plt.show()
+```
+
+## Correlation Analysis
+
+### Scatter Plots
+
+Visualize relationships between variables:
+
+```python
+# Trip miles vs tip (tippers only)
+plt.figure(figsize=(10, 6))
+df_tippers.plot(kind='scatter', x='trip_miles', y='tip', 
+                marker='.', alpha=0.5, s=20)
+plt.title('Tip vs Trip Distance', fontsize=14)
+plt.xlabel('Trip Miles', fontsize=12)
+plt.ylabel('Tip ($)', fontsize=12)
+plt.grid(True, alpha=0.3)
+plt.show()
+```
+
+<Note>
+Positive correlation visible: longer trips tend to have higher tips.
+</Note>
+
+### Correlation Coefficient
+
+Quantify the linear relationship:
+
+```python
+# Calculate correlation
+corr_miles_tip = df_tippers['trip_miles'].corr(df_tippers['tip'])
+print(f"Correlation between trip miles and tip: {corr_miles_tip:.3f}")
+
+# Interpretation
+if corr_miles_tip > 0.7:
+    strength = "strong"
+elif corr_miles_tip > 0.4:
+    strength = "moderate"
+else:
+    strength = "weak"
+
+print(f"This is a {strength} positive correlation")
+```
+
+### Correlation Matrix
+
+```python
+# Calculate correlations between all numerical variables
+corr_matrix = df_tippers[['trip_miles', 'fare', 'tip', 'trip_total']].corr()
+
+# Visualize with heatmap
+plt.figure(figsize=(10, 8))
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', center=0,
+            square=True, linewidths=1, fmt='.2f')
+plt.title('Correlation Matrix', fontsize=14)
+plt.show()
+
+print("\nCorrelation Matrix:")
+print(corr_matrix)
+```
+
+<CardGroup cols={2}>
+  <Card title="Strong Positive" icon="arrow-up">
+    0.7 to 1.0 - Variables increase together
+  </Card>
+  <Card title="Moderate Positive" icon="arrow-up-right">
+    0.4 to 0.7 - Noticeable relationship
+  </Card>
+  <Card title="Weak/No Correlation" icon="arrows-left-right">
+    -0.4 to 0.4 - Little to no linear relationship
+  </Card>
+  <Card title="Negative" icon="arrow-down">
+    -1.0 to -0.4 - Variables move in opposite directions
+  </Card>
+</CardGroup>
+
+### Multiple Comparisons
+
+```python
+# Compare different variable pairs
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# Trip miles vs tip
+axes[0, 0].scatter(df_tippers['trip_miles'], df_tippers['tip'], 
+                   alpha=0.5, s=10)
+axes[0, 0].set_xlabel('Trip Miles')
+axes[0, 0].set_ylabel('Tip ($)')
+axes[0, 0].set_title(f'Miles vs Tip (r={df_tippers["trip_miles"].corr(df_tippers["tip"]):.2f})')
+axes[0, 0].grid(True, alpha=0.3)
+
+# Fare vs tip
+axes[0, 1].scatter(df_tippers['fare'], df_tippers['tip'],
+                   alpha=0.5, s=10, color='green')
+axes[0, 1].set_xlabel('Fare ($)')
+axes[0, 1].set_ylabel('Tip ($)')
+axes[0, 1].set_title(f'Fare vs Tip (r={df_tippers["fare"].corr(df_tippers["tip"]):.2f})')
+axes[0, 1].grid(True, alpha=0.3)
+
+# Trip total vs trip miles
+axes[1, 0].scatter(df_tippers['trip_miles'], df_tippers['trip_total'],
+                   alpha=0.5, s=10, color='orange')
+axes[1, 0].set_xlabel('Trip Miles')
+axes[1, 0].set_ylabel('Trip Total ($)')
+axes[1, 0].set_title(f'Miles vs Total (r={df_tippers["trip_miles"].corr(df_tippers["trip_total"]):.2f})')
+axes[1, 0].grid(True, alpha=0.3)
+
+# Hour vs tip
+axes[1, 1].scatter(df_tippers['hour'], df_tippers['tip'],
+                   alpha=0.5, s=10, color='red')
+axes[1, 1].set_xlabel('Hour of Day')
+axes[1, 1].set_ylabel('Tip ($)')
+axes[1, 1].set_title(f'Hour vs Tip (r={df_tippers["hour"].corr(df_tippers["tip"]):.2f})')
+axes[1, 1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.show()
+```
+
+## Geographic Analysis
+
+### 2D Histogram (Joint Distribution)
+
+```python
+# Geographic distribution of pickups
+latitude = df.dropna()['pickup_centroid_latitude'].to_numpy()
+longitude = df.dropna()['pickup_centroid_longitude'].to_numpy()
+
+fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+hist = ax.hist2d(longitude, latitude, bins=50, density=True, cmap='YlOrRd')
+ax.set_aspect(1.3)
+fig.colorbar(hist[3], ax=ax, label='Density')
+ax.set_xlabel('Longitude (degrees)', fontsize=12)
+ax.set_ylabel('Latitude (degrees)', fontsize=12)
+ax.set_title('Geographic Distribution of Ride Pickups (Joint Distribution)', fontsize=14)
+plt.show()
+```
+
+<Note>
+This is a **joint distribution** - it shows how the probability is distributed across two variables simultaneously (latitude and longitude).
+</Note>
+
+### Finding Patterns
+
+```python
+# Identify airport rides
+airport_rides = df[
+    (df['pickup_centroid_longitude'] < -87.9) &
+    (df['pickup_centroid_latitude'] > 41.97) &
+    (df['pickup_centroid_latitude'] < 41.99)
+]
+
+print(f"Airport rides: {len(airport_rides)}")
+print(f"Percentage of total: {len(airport_rides)/len(df)*100:.1f}%")
+
+# Compare tipping rates
+airport_tip_rate = (airport_rides['tip'] > 0).sum() / len(airport_rides) * 100
+overall_tip_rate = (df['tip'] > 0).sum() / len(df) * 100
+
+print(f"\nAirport tip rate: {airport_tip_rate:.1f}%")
+print(f"Overall tip rate: {overall_tip_rate:.1f}%")
+print(f"Difference: {airport_tip_rate - overall_tip_rate:.1f} percentage points")
+```
+
+## Key EDA Concepts
+
+### Distributions
+
+<Tabs>
+  <Tab title="Marginal Distribution">
+    Distribution of a single variable, ignoring others.
+    
+    ```python
+    # Histogram of tips (marginal distribution)
+    plt.figure(figsize=(10, 6))
+    df['tip'].hist(bins=50, edgecolor='black')
+    plt.xlabel('Tip ($)')
+    plt.ylabel('Frequency')
+    plt.title('Marginal Distribution of Tips')
+    plt.show()
+    ```
+  </Tab>
+  
+  <Tab title="Joint Distribution">
+    Distribution across multiple variables simultaneously.
+    
+    ```python
+    # 2D histogram (shown above for geo data)
+    # Shows how two variables vary together
+    ```
+  </Tab>
+  
+  <Tab title="Conditional Distribution">
+    Distribution of one variable given specific value(s) of another.
+    
+    ```python
+    # Tips on Sunday (conditional on weekday='Sunday')
+    sunday_tips = df[df['weekday'] == 'Sunday']['tip']
+    plt.figure(figsize=(10, 6))
+    sunday_tips.hist(bins=30, edgecolor='black')
+    plt.xlabel('Tip ($)')
+    plt.ylabel('Frequency')
+    plt.title('Conditional Distribution: Tips | Sunday')
+    plt.show()
+    ```
+  </Tab>
+</Tabs>
+
+## EDA Best Practices
+
+<Steps>
+  <Step title="Start with Summary Statistics">
+    Use `.describe()`, `.info()`, `.head()` to understand data structure and ranges
+  </Step>
+  
+  <Step title="Visualize Distributions">
+    Histograms and box plots reveal shape, skewness, and outliers
+  </Step>
+  
+  <Step title="Check for Missing Data">
+    Use `.isnull().sum()` to identify missing values
+  </Step>
+  
+  <Step title="Identify Outliers">
+    Box plots and scatter plots help spot unusual values
+  </Step>
+  
+  <Step title="Explore Relationships">
+    Scatter plots and correlation matrices reveal associations
+  </Step>
+  
+  <Step title="Segment Analysis">
+    Group by categorical variables to find patterns in subgroups
+  </Step>
+</Steps>
+
+## Common Pitfalls
+
+<Warning>
+**Correlation ≠ Causation**
+
+Just because two variables are correlated doesn't mean one causes the other. There could be:
+- A third confounding variable
+- Reverse causation
+- Pure coincidence
+</Warning>
+
+<Warning>
+**Simpson's Paradox**
+
+A trend that appears in different groups can disappear or reverse when groups are combined. Always check subgroups!
+</Warning>
+
+<Warning>
+**Outliers Can Mislead**
+
+Mean is sensitive to outliers. Use median for skewed distributions, and always visualize your data.
+</Warning>
+
+## Summary Checklist
+
+<Accordion title="Complete EDA Checklist">
+  ☐ Load and inspect data structure  
+  ☐ Check data types and missing values  
+  ☐ Compute summary statistics  
+  ☐ Visualize distributions (histograms, box plots)  
+  ☐ Identify and investigate outliers  
+  ☐ Explore relationships (scatter plots, correlations)  
+  ☐ Group analysis by categorical variables  
+  ☐ Check for patterns across time/space  
+  ☐ Document interesting findings  
+  ☐ Form hypotheses for further analysis  
+</Accordion>
+
+## Key Takeaways
+
+- Summary statistics provide quick overview but can miss important patterns
+- Visualization is essential - never rely on statistics alone
+- Box plots efficiently show distribution, quartiles, and outliers
+- Correlation measures linear relationships between variables
+- Group analysis reveals patterns hidden in aggregate data
+- Joint distributions show how multiple variables vary together
+- EDA is iterative - findings lead to new questions

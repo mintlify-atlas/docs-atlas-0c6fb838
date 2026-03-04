@@ -1,0 +1,391 @@
+---
+title: Vector Operations
+description: Master fundamental vector operations including scalar multiplication, vector addition, dot products, and understand the power of vectorization.
+---
+
+In this lab, you'll use Python and NumPy to perform essential vector operations and discover why vectorized implementations are crucial for machine learning.
+
+## Learning Objectives
+
+- Perform scalar multiplication and vector addition
+- Calculate dot products using multiple methods
+- Understand geometric interpretations of vector operations
+- Compare vectorized vs loop-based implementations
+- Apply vector operations to machine learning problems
+
+## Setup
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+```
+
+## Visualizing Vectors
+
+A vector $v \in \mathbb{R}^2$ can be visualized as an arrow from the origin:
+
+$$v = \begin{bmatrix} v_1 \\ v_2 \end{bmatrix}$$
+
+```python
+def plot_vectors(vectors, labels, colors):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_xlim(-10, 10)
+    ax.set_ylim(-10, 10)
+    ax.grid(True)
+    ax.set_aspect('equal')
+    
+    for v, label, color in zip(vectors, labels, colors):
+        ax.quiver(0, 0, v[0], v[1], 
+                 angles='xy', scale_units='xy', scale=1,
+                 color=color, width=0.006)
+        ax.text(v[0]+0.3, v[1]+0.3, label, 
+               fontsize=14, color=color)
+    
+    plt.show()
+
+# Example: Plot a vector
+v = np.array([3, 4])
+plot_vectors([v], [r'$v$'], ['black'])
+```
+
+<Callout type="info">
+Vectors are defined by their **magnitude** (length) and **direction**, not their position. We typically plot them starting at the origin for convenience.
+</Callout>
+
+## Scalar Multiplication
+
+**Scalar multiplication** scales a vector by a constant $k$:
+
+$$kv = \begin{bmatrix} kv_1 \\ kv_2 \\ \vdots \\ kv_n \end{bmatrix}$$
+
+### Properties
+
+- If $k > 1$: vector is stretched
+- If $0 < k < 1$: vector is shrunk
+- If $k < 0$: vector points in opposite direction
+- If $k = 0$: result is zero vector
+
+### Implementation
+
+```python
+v = np.array([3, 4])
+
+# Scalar multiplication
+plot_vectors(
+    [v, 2*v, -2*v],
+    [r'$v$', r'$2v$', r'$-2v$'],
+    ['black', 'green', 'blue']
+)
+```
+
+In Python, simply use the `*` operator!
+
+## Vector Addition
+
+**Vector addition** combines two vectors element-wise:
+
+$$v + w = \begin{bmatrix} v_1 + w_1 \\ v_2 + w_2 \\ \vdots \\ v_n + w_n \end{bmatrix}$$
+
+### Geometric Interpretation: Parallelogram Law
+
+The sum $v + w$ is the diagonal of the parallelogram formed by $v$ and $w$:
+
+```python
+v = np.array([1, 3])
+w = np.array([4, -1])
+
+plot_vectors(
+    [v, w, v + w],
+    [r'$v$', r'$w$', r'$v + w$'],
+    ['black', 'black', 'red']
+)
+```
+
+### Implementation
+
+```python
+# Using + operator
+sum_result = v + w
+print(sum_result)  # [5 2]
+
+# Using np.add()
+sum_result = np.add(v, w)
+print(sum_result)  # [5 2]
+```
+
+## Vector Norm (Length)
+
+The **norm** of a vector is its length:
+
+$$\|v\| = \sqrt{v_1^2 + v_2^2 + \cdots + v_n^2}$$
+
+```python
+v = np.array([3, 4])
+norm_v = np.linalg.norm(v)
+print(f"Norm of v: {norm_v}")  # 5.0
+```
+
+For $v = [3, 4]$:
+$$\|v\| = \sqrt{3^2 + 4^2} = \sqrt{9 + 16} = \sqrt{25} = 5$$
+
+## Dot Product
+
+The **dot product** (scalar product) is a fundamental operation that takes two vectors and returns a scalar.
+
+### Algebraic Definition
+
+For vectors $x, y \in \mathbb{R}^n$:
+
+$$x \cdot y = \sum_{i=1}^{n} x_i y_i = x_1y_1 + x_2y_2 + \cdots + x_ny_n$$
+
+### Implementation Methods
+
+#### Method 1: Manual Loop
+
+```python
+def dot(x, y):
+    """Calculate dot product using a loop."""
+    result = 0
+    for xi, yi in zip(x, y):
+        result += xi * yi
+    return result
+
+x = [1, -2, -5]
+y = [4, 3, -1]
+
+print(dot(x, y))  # 3
+```
+
+#### Method 2: NumPy's np.dot()
+
+```python
+result = np.dot(x, y)
+print(result)  # 3
+```
+
+#### Method 3: @ Operator
+
+```python
+x = np.array([1, -2, -5])
+y = np.array([4, 3, -1])
+
+result = x @ y
+print(result)  # 3
+```
+
+<Callout type="warning">
+The `@` operator requires NumPy arrays. Regular Python lists will raise a `TypeError`.
+</Callout>
+
+### Calculation Example
+
+For $x = [1, -2, -5]$ and $y = [4, 3, -1]$:
+
+$$
+\begin{align}
+x \cdot y &= (1)(4) + (-2)(3) + (-5)(-1) \\
+&= 4 - 6 + 5 \\
+&= 3
+\end{align}
+$$
+
+## Geometric Definition
+
+The dot product can also be defined geometrically:
+
+$$x \cdot y = \|x\| \|y\| \cos(\theta)$$
+
+where $\theta$ is the angle between the vectors.
+
+### Testing Orthogonality
+
+If two vectors are **orthogonal** (perpendicular), their dot product is zero:
+
+$$\cos(90°) = 0 \implies x \cdot y = 0$$
+
+```python
+# Standard basis vectors (orthogonal)
+i = np.array([1, 0, 0])
+j = np.array([0, 1, 0])
+
+print(f"i · j = {i @ j}")  # 0
+```
+
+### Computing Angles
+
+Rearranging the geometric formula:
+
+$$\cos(\theta) = \frac{x \cdot y}{\|x\| \|y\|}$$
+
+```python
+def angle_between(x, y):
+    """Calculate angle in degrees between two vectors."""
+    cos_theta = (x @ y) / (np.linalg.norm(x) * np.linalg.norm(y))
+    theta_rad = np.arccos(cos_theta)
+    theta_deg = np.degrees(theta_rad)
+    return theta_deg
+
+x = np.array([1, 0])
+y = np.array([1, 1])
+
+print(f"Angle: {angle_between(x, y):.1f}°")  # 45.0°
+```
+
+## Vector Similarity
+
+The geometric definition is used to measure **similarity** between vectors:
+
+$$\text{similarity}(x, y) = \cos(\theta) = \frac{x \cdot y}{\|x\| \|y\|}$$
+
+- **cos(θ) = 1**: Vectors point in same direction (identical)
+- **cos(θ) = 0**: Vectors are orthogonal (no similarity)
+- **cos(θ) = -1**: Vectors point in opposite directions
+
+This is used in:
+- **Natural Language Processing**: Measuring word similarity
+- **Recommendation Systems**: Finding similar items
+- **Image Recognition**: Comparing feature vectors
+
+## Vectorization: Speed Comparison
+
+Vectorized operations are **dramatically faster** than loops:
+
+```python
+import time
+
+# Create large vectors
+a = np.random.rand(1000000)
+b = np.random.rand(1000000)
+
+# Loop version
+tic = time.time()
+c = dot(a.tolist(), b.tolist())
+toc = time.time()
+loop_time = 1000 * (toc - tic)
+
+print(f"Loop version: {loop_time:.2f} ms")
+print(f"Result: {c}")
+
+# Vectorized version (np.dot)
+tic = time.time()
+c = np.dot(a, b)
+toc = time.time()
+np_time = 1000 * (toc - tic)
+
+print(f"\nnp.dot() version: {np_time:.2f} ms")
+print(f"Result: {c}")
+print(f"\nSpeedup: {loop_time/np_time:.0f}x faster!")
+
+# Vectorized version (@ operator)
+tic = time.time()
+c = a @ b
+toc = time.time()
+at_time = 1000 * (toc - tic)
+
+print(f"\n@ operator version: {at_time:.2f} ms")
+print(f"Result: {c}")
+```
+
+Typical output:
+```
+Loop version: 450.32 ms
+np.dot() version: 2.15 ms
+
+Speedup: 209x faster!
+```
+
+<Callout type="tip">
+**Always use vectorized operations in machine learning!** With thousands or millions of operations, the speed difference is critical.
+</Callout>
+
+## Summary of Operations
+
+| Operation | Formula | NumPy Code | Result Type |
+|-----------|---------|------------|-------------|
+| Scalar Multiplication | $kv$ | `k * v` | Vector |
+| Vector Addition | $v + w$ | `v + w` | Vector |
+| Dot Product | $v \cdot w$ | `v @ w` or `np.dot(v, w)` | Scalar |
+| Norm | $\|v\|$ | `np.linalg.norm(v)` | Scalar |
+
+## Practice Problems
+
+<AccordionGroup>
+  <Accordion title="Problem 1: Compute Dot Product">
+    Calculate the dot product of $v = [2, -1, 3]$ and $w = [1, 4, -2]$.
+    
+    <details>
+    <summary>Solution</summary>
+    
+    ```python
+    v = np.array([2, -1, 3])
+    w = np.array([1, 4, -2])
+    result = v @ w
+    print(result)  # -8
+    ```
+    
+    Manual: $(2)(1) + (-1)(4) + (3)(-2) = 2 - 4 - 6 = -8$
+    </details>
+  </Accordion>
+  
+  <Accordion title="Problem 2: Check Orthogonality">
+    Are vectors $a = [3, 4]$ and $b = [-4, 3]$ orthogonal?
+    
+    <details>
+    <summary>Solution</summary>
+    
+    ```python
+    a = np.array([3, 4])
+    b = np.array([-4, 3])
+    print(a @ b)  # 0
+    ```
+    
+    Yes! $(3)(-4) + (4)(3) = -12 + 12 = 0$
+    </details>
+  </Accordion>
+  
+  <Accordion title="Problem 3: Calculate Angle">
+    Find the angle between $u = [1, 0]$ and $v = [0, 1]$.
+    
+    <details>
+    <summary>Solution</summary>
+    
+    ```python
+    u = np.array([1, 0])
+    v = np.array([0, 1])
+    cos_theta = (u @ v) / (np.linalg.norm(u) * np.linalg.norm(v))
+    theta = np.degrees(np.arccos(cos_theta))
+    print(f"{theta}°")  # 90.0°
+    ```
+    
+    These are orthogonal (perpendicular)!
+    </details>
+  </Accordion>
+</AccordionGroup>
+
+## Key Takeaways
+
+<CardGroup cols={2}>
+  <Card title="Vectorization" icon="bolt">
+    Always prefer vectorized operations - they can be 100x+ faster than loops
+  </Card>
+  
+  <Card title="Dot Product" icon="calculator">
+    Use `@` operator or `np.dot()` - both are fast and convenient
+  </Card>
+  
+  <Card title="Orthogonality" icon="compass">
+    Vectors are orthogonal if their dot product equals zero
+  </Card>
+  
+  <Card title="Similarity" icon="link">
+    Cosine similarity measures how similar two vectors are
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Now that you understand vector operations, let's extend to matrix multiplication.
+
+<Card title="Next: Matrix Multiplication" icon="arrow-right" href="/mathematics/algebra/matrix-multiplication">
+  Learn how to multiply matrices and apply to machine learning
+</Card>
